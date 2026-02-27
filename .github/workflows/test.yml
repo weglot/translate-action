@@ -1,0 +1,37 @@
+name: Test Translate Action
+
+on:
+  push:
+
+jobs:
+  test-translate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Enable Yarn (Corepack)
+        run: corepack enable && corepack prepare yarn@1.22.22 --activate
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build and test
+        run: yarn test
+
+      - name: Weglot Translate (files mode)
+        uses: ./
+        with:
+          api-key: ${{ secrets.WEGLOT_API_KEY }}
+          source-path: test/fixtures/locales/en.json
+          output-mode: files
+          languages: fr
+
+      - name: Check translated file exists
+        run: |
+          cat test/fixtures/locales/fr.json
+          test -f test/fixtures/locales/fr.json && echo "fr.json created" || exit 1
