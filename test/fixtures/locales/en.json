@@ -1,0 +1,8 @@
+{
+  "hello": "Hello",
+  "welcome": "Welcome to our app",
+  "nested": {
+    "title": "Settings",
+    "description": "Configure your preferences"
+  }
+}
