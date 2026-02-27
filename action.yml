@@ -1,0 +1,40 @@
+name: 'Weglot Translate Action'
+description: 'Translate localization files (JSON/YAML) using your Weglot project'
+author: 'Weglot'
+branding:
+  icon: 'globe'
+  color: 'blue'
+
+inputs:
+  api-key:
+    description: 'Weglot API key'
+    required: true
+  source-path:
+    description: 'Path or glob to source file(s), e.g. locales/en.json or "locales/**/*.json"'
+    required: true
+  output-dir:
+    description: 'Directory for translated files (default: same as source directory)'
+    required: false
+    default: ''
+  output-mode:
+    description: 'Output mode: "files" (write to disk) or "pr" (create a PR with changes)'
+    required: false
+    default: 'files'
+  languages:
+    description: 'Comma-separated target language codes (default: all from Weglot project)'
+    required: false
+    default: ''
+  pr-branch:
+    description: 'Branch name for PR mode (default: weglot-translations-<timestamp>)'
+    required: false
+    default: ''
+
+outputs:
+  output-path:
+    description: 'Directory where translated files were written (files mode)'
+  pr-url:
+    description: 'URL of the created pull request (pr mode)'
+
+runs:
+  using: 'node24'
+  main: 'dist/index.js'
