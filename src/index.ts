@@ -70,7 +70,7 @@ async function main(): Promise<void> {
 
     const targetLanguages = languagesInput
       ? filterLanguages(languagesInput, languagesFromSettings)
-      : languagesFromSettings.map(l => l.custom_code ?? l.language_to);
+      : languagesFromSettings.map(l => l.language_to);
 
     if (targetLanguages.length === 0) {
       core.setFailed("No target languages to translate.");
