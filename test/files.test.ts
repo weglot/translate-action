@@ -38,7 +38,7 @@ describe("getOutputPath", () => {
     expect(out).toBe(path.join(workspace, "translated", "locales", "fr", "main.json"));
   });
 
-  it("leaves path unchanged when source language does not appear in path or filename", () => {
+  it("appends target language to filename when source language does not appear in path or filename", () => {
     const out = getOutputPath(
       "locales/main.json",
       "fr",
@@ -46,7 +46,7 @@ describe("getOutputPath", () => {
       "",
       workspace
     );
-    expect(out).toBe(path.join(workspace, "locales", "main.json"));
+    expect(out).toBe(path.join(workspace, "locales", "main.fr.json"));
   });
 });
 
