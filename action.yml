@@ -28,6 +28,10 @@ inputs:
     description: 'Branch name for PR mode (default: weglot-translations-<timestamp>)'
     required: false
     default: ''
+  github-token:
+    description: 'Token for GitHub API and git push in PR mode (pass secrets.GITHUB_TOKEN or github.token)'
+    required: false
+    default: ''
 
 outputs:
   output-path:

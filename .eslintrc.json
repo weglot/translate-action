@@ -16,7 +16,7 @@
     "plugin:prettier/recommended",
     "prettier"
   ],
-  "ignorePatterns": ["dist/**", "node_modules/**"],
+  "ignorePatterns": ["dist/**", "lib/**", "node_modules/**", "rollup.config.mjs"],
   "rules": {
     "prettier/prettier": "error",
     "sort-keys": ["error", "asc", { "caseSensitive": true, "natural": true, "minKeys": 4 }],

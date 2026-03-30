@@ -3,7 +3,7 @@ import {
   applyTranslations,
   readJson,
   writeJson,
-} from "../../dist/file-types/json.js";
+} from "../../lib/file-types/json.js";
 import path from "path";
 import os from "os";
 import fs from "fs/promises";

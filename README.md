@@ -42,7 +42,10 @@ jobs:
           api-key: ${{ secrets.WEGLOT_API_KEY }}
           source-path: locales/en.json
           output-mode: pr
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+JavaScript actions do not receive `GITHUB_TOKEN` in the environment automatically—you must pass **`github-token`** (usually `${{ secrets.GITHUB_TOKEN }}`, same as `github.token`).
 
 ## Inputs
 
@@ -54,6 +57,7 @@ jobs:
 | `output-mode` | No | `files` | `files` = write to disk; `pr` = create a branch and open a PR **only if** translated files differ from the current branch. |
 | `languages` | No | (from project) | Comma-separated target codes (e.g. `fr,de`). If empty, uses all languages from your Weglot project. |
 | `pr-branch` | No | (auto) | Branch name when `output-mode: pr`. |
+| `github-token` | When `output-mode: pr` | - | Token for the GitHub API and `git push`. Use `${{ secrets.GITHUB_TOKEN }}`. Job needs `contents: write` and `pull-requests: write`. |
 
 ## Outputs
 

@@ -54,6 +54,11 @@ async function main(): Promise<void> {
       .getInput("languages", { required: false })
       .trim();
     const prBranch = core.getInput("pr-branch", { required: false }).trim();
+    const githubToken = (
+      core.getInput("github-token", { required: false }).trim() ||
+      process.env.GITHUB_TOKEN ||
+      ""
+    ).trim();
 
     const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
 
@@ -139,7 +144,13 @@ async function main(): Promise<void> {
     core.setOutput("output-path", outputBase);
 
     if (outputMode === "pr") {
-      await createPullRequest(workspace, writtenPaths, prBranch);
+      if (!githubToken) {
+        core.setFailed(
+          "PR mode requires a GitHub token. Add to your workflow: github-token: ${{ secrets.GITHUB_TOKEN }} (and permissions: contents: write, pull-requests: write)."
+        );
+        return;
+      }
+      await createPullRequest(workspace, writtenPaths, prBranch, githubToken);
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -150,10 +161,11 @@ async function main(): Promise<void> {
 async function createPullRequest(
   workspace: string,
   writtenPaths: string[],
-  prBranchInput: string
+  prBranchInput: string,
+  githubToken: string
 ): Promise<void> {
   const exec = (await import("@actions/exec")).exec;
-  const octokit = github.getOctokit(process.env.GITHUB_TOKEN!);
+  const octokit = github.getOctokit(githubToken);
   const branchName = prBranchInput || `weglot-translations-${Date.now()}`;
 
   await exec("git", ["config", "user.name", "github-actions[bot]"], {
@@ -213,12 +225,26 @@ async function createPullRequest(
   core.setOutput("pr-url", pr.data.html_url);
   core.info(`Pull request created: ${pr.data.html_url}`);
 
-  try {
-    await exec("git", ["checkout", defaultBranch], { cwd: workspace });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
+  const gitCheckout = async (args: string[]): Promise<boolean> => {
+    const code = await exec("git", args, {
+      cwd: workspace,
+      ignoreReturnCode: true,
+    });
+    return code === 0;
+  };
+
+  if (await gitCheckout(["checkout", "-"])) {
+    core.info("Restored initial branch.");
+  } else if (
+    process.env.GITHUB_REF_NAME &&
+    (await gitCheckout(["checkout", process.env.GITHUB_REF_NAME]))
+  ) {
+    core.info(`Checked out GITHUB_REF_NAME (${process.env.GITHUB_REF_NAME}).`);
+  } else if (await gitCheckout(["checkout", defaultBranch])) {
+    core.info(`Checked out repository default branch (${defaultBranch}).`);
+  } else {
     core.warning(
-      `Could not check out the default branch (${defaultBranch}) after creating the PR: ${message}`
+      `Could not restore the original branch after creating the PR; still on "${branchName}". Later steps may miss files if your default branch (${defaultBranch}) differs from the branch this job checked out.`
     );
   }
 }

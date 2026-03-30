@@ -83,7 +83,13 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-# dist is committed so the action runs (yarn build then commit)
+# TypeScript emit for Jest (not committed)
+lib/
+
+# Rollup + TS plugin may use this under dist/ during build (cleaned by rm -rf dist)
+dist/.tsbuild/
+
+# dist is committed: single bundled index.js for the action (no node_modules on runner)
 # dist
 
 # Gatsby files

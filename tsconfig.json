@@ -3,7 +3,7 @@
     "target": "ES2022",
     "module": "CommonJS",
     "moduleResolution": "node",
-    "outDir": "dist",
+    "outDir": "lib",
     "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
@@ -12,5 +12,5 @@
     "sourceMap": false
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "test"]
+  "exclude": ["node_modules", "dist", "lib", "test"]
 }

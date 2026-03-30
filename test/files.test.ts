@@ -1,6 +1,6 @@
 import path from "path";
 import os from "os";
-import { getOutputPath, resolveSourceFiles } from "../dist/files.js";
+import { getOutputPath, resolveSourceFiles } from "../lib/files.js";
 
 describe("getOutputPath", () => {
   const workspace = path.join(os.tmpdir(), "translate-action-test-workspace");
