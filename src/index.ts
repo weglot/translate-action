@@ -166,12 +166,24 @@ async function createPullRequest(
       cwd: workspace,
     }
   );
-  await exec("git", ["checkout", "-b", branchName], { cwd: workspace });
 
   for (const p of writtenPaths) {
     const relative = path.relative(workspace, p);
-    await exec("git", ["add", relative], { cwd: workspace });
+    await exec("git", ["add", "--", relative], { cwd: workspace });
   }
+
+  const diffExitCode = await exec("git", ["diff", "--cached", "--quiet"], {
+    cwd: workspace,
+    ignoreReturnCode: true,
+  });
+  if (diffExitCode === 0) {
+    core.info(
+      "No translation changes compared to the current branch; skipping pull request."
+    );
+    return;
+  }
+
+  await exec("git", ["checkout", "-b", branchName], { cwd: workspace });
 
   await exec(
     "git",
@@ -189,6 +201,7 @@ async function createPullRequest(
         | { default_branch?: string }
         | undefined
     )?.default_branch ?? "main";
+
   const pr = await octokit.rest.pulls.create({
     base: defaultBranch,
     body: "This PR was created by the Weglot Translate Action with the latest translations.",
@@ -199,6 +212,15 @@ async function createPullRequest(
   });
   core.setOutput("pr-url", pr.data.html_url);
   core.info(`Pull request created: ${pr.data.html_url}`);
+
+  try {
+    await exec("git", ["checkout", defaultBranch], { cwd: workspace });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    core.warning(
+      `Could not check out the default branch (${defaultBranch}) after creating the PR: ${message}`
+    );
+  }
 }
 
 main();

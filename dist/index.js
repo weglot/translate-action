@@ -148,11 +148,19 @@ async function createPullRequest(workspace, writtenPaths, prBranchInput) {
     await exec("git", ["config", "user.email", "github-actions[bot]@users.noreply.github.com"], {
         cwd: workspace,
     });
-    await exec("git", ["checkout", "-b", branchName], { cwd: workspace });
     for (const p of writtenPaths) {
         const relative = path_1.default.relative(workspace, p);
-        await exec("git", ["add", relative], { cwd: workspace });
+        await exec("git", ["add", "--", relative], { cwd: workspace });
     }
+    const diffExitCode = await exec("git", ["diff", "--cached", "--quiet"], {
+        cwd: workspace,
+        ignoreReturnCode: true,
+    });
+    if (diffExitCode === 0) {
+        core.info("No translation changes compared to the current branch; skipping pull request.");
+        return;
+    }
+    await exec("git", ["checkout", "-b", branchName], { cwd: workspace });
     await exec("git", ["commit", "-m", "Add Weglot translated localization files"], {
         cwd: workspace,
     });
@@ -169,5 +177,12 @@ async function createPullRequest(workspace, writtenPaths, prBranchInput) {
     });
     core.setOutput("pr-url", pr.data.html_url);
     core.info(`Pull request created: ${pr.data.html_url}`);
+    try {
+        await exec("git", ["checkout", defaultBranch], { cwd: workspace });
+    }
+    catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        core.warning(`Could not check out the default branch (${defaultBranch}) after creating the PR: ${message}`);
+    }
 }
 main();

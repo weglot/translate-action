@@ -34,6 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write   # required for creating a branch and PR
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - uses: weglot/translate-action@v1
@@ -50,13 +51,13 @@ jobs:
 | `api-key` | Yes | - | Weglot API key. |
 | `source-path` | Yes | - | Path or glob to source file(s), e.g. `locales/en.json` or `locales/**/*.json`. |
 | `output-dir` | No | (same as source) | Directory for translated files. |
-| `output-mode` | No | `files` | `files` = write to disk; `pr` = create a branch and open a PR. |
+| `output-mode` | No | `files` | `files` = write to disk; `pr` = create a branch and open a PR **only if** translated files differ from the current branch. |
 | `languages` | No | (from project) | Comma-separated target codes (e.g. `fr,de`). If empty, uses all languages from your Weglot project. |
 | `pr-branch` | No | (auto) | Branch name when `output-mode: pr`. |
 
 ## Outputs
 
 - `output-path`: Directory where translated files were written (`files` mode).
-- `pr-url`: URL of the created pull request (`pr` mode).
+- `pr-url`: URL of the created pull request (`pr` mode). Set only when a PR was opened; omitted if there were no file changes.
 
 In workflow expressions, use bracket notation for hyphenated outputs, e.g. `${{ steps.<id>.outputs['output-path'] }}`.
