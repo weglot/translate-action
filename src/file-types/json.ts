@@ -72,7 +72,7 @@ export async function readJson(
     return JSON.parse(content) as Record<string, unknown>;
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
-    throw new Error(`Invalid JSON in ${filePath}: ${message}`);
+    throw new Error(`Invalid JSON in ${filePath}: ${message}`, { cause: e });
   }
 }
 

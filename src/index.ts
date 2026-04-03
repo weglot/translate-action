@@ -10,6 +10,7 @@ import {
   writeJson,
 } from "./file-types/json.js";
 import { resolveSourceFiles, getOutputPath } from "./files.js";
+import { computeTranslationPrBranchName, runGit } from "./helpers.js";
 
 function filterLanguages(
   languagesInput: string,
@@ -53,7 +54,6 @@ async function main(): Promise<void> {
     const languagesInput = core
       .getInput("languages", { required: false })
       .trim();
-    const prBranch = core.getInput("pr-branch", { required: false }).trim();
     const githubToken = (
       core.getInput("github-token", { required: false }).trim() ||
       process.env.GITHUB_TOKEN ||
@@ -150,7 +150,19 @@ async function main(): Promise<void> {
         );
         return;
       }
-      await createPullRequest(workspace, writtenPaths, prBranch, githubToken);
+      const prBranchName = computeTranslationPrBranchName({
+        apiKey,
+        outputDir,
+        sourcePath,
+      });
+      core.setOutput("pr-branch", prBranchName);
+      core.info(`PR branch: ${prBranchName}`);
+      await createPullRequest(
+        workspace,
+        writtenPaths,
+        prBranchName,
+        githubToken
+      );
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -161,51 +173,10 @@ async function main(): Promise<void> {
 async function createPullRequest(
   workspace: string,
   writtenPaths: string[],
-  prBranchInput: string,
+  branchName: string,
   githubToken: string
 ): Promise<void> {
-  const exec = (await import("@actions/exec")).exec;
   const octokit = github.getOctokit(githubToken);
-  const branchName = prBranchInput || `weglot-translations-${Date.now()}`;
-
-  await exec("git", ["config", "user.name", "github-actions[bot]"], {
-    cwd: workspace,
-  });
-  await exec(
-    "git",
-    ["config", "user.email", "github-actions[bot]@users.noreply.github.com"],
-    {
-      cwd: workspace,
-    }
-  );
-
-  for (const p of writtenPaths) {
-    const relative = path.relative(workspace, p);
-    await exec("git", ["add", "--", relative], { cwd: workspace });
-  }
-
-  const diffExitCode = await exec("git", ["diff", "--cached", "--quiet"], {
-    cwd: workspace,
-    ignoreReturnCode: true,
-  });
-  if (diffExitCode === 0) {
-    core.info(
-      "No translation changes compared to the current branch; skipping pull request."
-    );
-    return;
-  }
-
-  await exec("git", ["checkout", "-b", branchName], { cwd: workspace });
-
-  await exec(
-    "git",
-    ["commit", "-m", "Add Weglot translated localization files"],
-    {
-      cwd: workspace,
-    }
-  );
-  await exec("git", ["push", "-u", "origin", branchName], { cwd: workspace });
-
   const { owner, repo } = github.context.repo;
   const defaultBranch =
     (
@@ -214,38 +185,171 @@ async function createPullRequest(
         | undefined
     )?.default_branch ?? "main";
 
-  const pr = await octokit.rest.pulls.create({
-    base: defaultBranch,
-    body: "This PR was created by the Weglot Translate Action with the latest translations.",
-    head: branchName,
-    owner,
-    repo,
-    title: "Add Weglot translated localization files",
-  });
-  core.setOutput("pr-url", pr.data.html_url);
-  core.info(`Pull request created: ${pr.data.html_url}`);
+  await runGit(["config", "user.name", "github-actions[bot]"], false);
+  await runGit(
+    ["config", "user.email", "github-actions[bot]@users.noreply.github.com"],
+    false
+  );
 
-  const gitCheckout = async (args: string[]): Promise<boolean> => {
-    const code = await exec("git", args, {
-      cwd: workspace,
-      ignoreReturnCode: true,
+  const relativeWritten = writtenPaths.map(p => path.relative(workspace, p));
+
+  const fetchOpenPrUrl = async (): Promise<string | undefined> => {
+    const { data } = await octokit.rest.pulls.list({
+      head: `${owner}:${branchName}`,
+      owner,
+      per_page: 1,
+      repo,
+      state: "open",
     });
-    return code === 0;
+    return data[0]?.html_url;
   };
 
-  if (await gitCheckout(["checkout", "-"])) {
-    core.info("Restored initial branch.");
-  } else if (
-    process.env.GITHUB_REF_NAME &&
-    (await gitCheckout(["checkout", process.env.GITHUB_REF_NAME]))
-  ) {
-    core.info(`Checked out GITHUB_REF_NAME (${process.env.GITHUB_REF_NAME}).`);
-  } else if (await gitCheckout(["checkout", defaultBranch])) {
-    core.info(`Checked out repository default branch (${defaultBranch}).`);
-  } else {
-    core.warning(
-      `Could not restore the original branch after creating the PR; still on "${branchName}". Later steps may miss files if your default branch (${defaultBranch}) differs from the branch this job checked out.`
+  // Refresh origin; decide between "new branch" and "track existing translations/*".
+  await runGit(["fetch", "origin"], false);
+
+  const remoteBranchExists =
+    (await runGit(["rev-parse", "--verify", `origin/${branchName}`])) === 0;
+
+  if (relativeWritten.length > 0) {
+    await runGit(["add", "--", ...relativeWritten], false);
+  }
+
+  // Stash staged translations so checkout/merge cannot strand them on the wrong branch.
+  const stashCode = await runGit([
+    "stash",
+    "push",
+    "-m",
+    "weglot-translate-action",
+    "--staged",
+  ]);
+  if (stashCode !== 0) {
+    core.setFailed(
+      "Could not stash translation changes before switching branches."
     );
+    return;
+  }
+
+  let stashAfterBranch: "pending" | "applied" | "pop_failed" = "pending";
+  try {
+    // Check out PR branch; if it already exists remotely, rebase it onto default first.
+    if (remoteBranchExists) {
+      if (
+        (await runGit([
+          "checkout",
+          "-B",
+          branchName,
+          `origin/${branchName}`,
+        ])) !== 0
+      ) {
+        core.setFailed(`Could not check out origin/${branchName}.`);
+        return;
+      }
+      if ((await runGit(["rebase", `origin/${defaultBranch}`])) !== 0) {
+        await runGit(["rebase", "--abort"]);
+        core.setFailed(
+          `Rebase of ${branchName} onto origin/${defaultBranch} failed. Resolve conflicts locally on that branch.`
+        );
+        return;
+      }
+    } else {
+      if (
+        (await runGit([
+          "checkout",
+          "-B",
+          branchName,
+          `origin/${defaultBranch}`,
+        ])) !== 0
+      ) {
+        core.setFailed(
+          `Could not create branch ${branchName} from origin/${defaultBranch}.`
+        );
+        return;
+      }
+    }
+
+    if ((await runGit(["stash", "pop"])) !== 0) {
+      stashAfterBranch = "pop_failed";
+      core.setFailed(
+        "Could not apply stashed translations (conflicts?). Fix conflicts and run again."
+      );
+      return;
+    }
+    stashAfterBranch = "applied";
+
+    if (relativeWritten.length > 0) {
+      await runGit(["add", "--", ...relativeWritten], false);
+    }
+
+    // Index matches HEAD (e.g. rebase + same content) → no commit/push.
+    if ((await runGit(["diff", "--cached", "--quiet"])) === 0) {
+      const existingUrl = await fetchOpenPrUrl();
+      if (existingUrl) {
+        core.setOutput("pr-url", existingUrl);
+        core.info(
+          `No new translation changes after rebasing onto ${defaultBranch}; open PR unchanged: ${existingUrl}`
+        );
+      } else {
+        core.info(
+          `No translation changes to commit on ${branchName} and no open PR found.`
+        );
+      }
+      return;
+    }
+
+    await runGit(
+      ["commit", "-m", "Update Weglot translated localization files"],
+      false
+    );
+
+    // Push updates the branch; open a PR only when none exists for this head.
+    // After rebase, history may diverge from origin → force-with-lease (not plain force).
+    const pushCode = remoteBranchExists
+      ? await runGit(["push", "--force-with-lease", "-u", "origin", branchName])
+      : await runGit(["push", "-u", "origin", branchName]);
+    if (pushCode !== 0) {
+      core.setFailed(`git push failed for ${branchName}.`);
+      return;
+    }
+
+    let prUrl = await fetchOpenPrUrl();
+    if (!prUrl) {
+      const pr = await octokit.rest.pulls.create({
+        base: defaultBranch,
+        body: "This PR was created by the Weglot Translate Action with the latest translations.",
+        head: branchName,
+        owner,
+        repo,
+        title: "Add Weglot translated localization files",
+      });
+      prUrl = pr.data.html_url;
+      core.info(`Pull request created: ${prUrl}`);
+    } else {
+      core.info(`Updated existing pull request branch ${branchName}: ${prUrl}`);
+    }
+    core.setOutput("pr-url", prUrl);
+  } finally {
+    // Try to restore initial branch in all cases.
+    if ((await runGit(["checkout", "-"])) === 0) {
+      core.info("Restored initial branch.");
+    } else if (
+      process.env.GITHUB_REF_NAME &&
+      (await runGit(["checkout", process.env.GITHUB_REF_NAME])) === 0
+    ) {
+      core.info(
+        `Checked out GITHUB_REF_NAME (${process.env.GITHUB_REF_NAME}).`
+      );
+    } else if ((await runGit(["checkout", defaultBranch])) === 0) {
+      core.info(`Checked out repository default branch (${defaultBranch}).`);
+    } else {
+      core.warning(
+        `Could not restore the original branch. You may still be on "${branchName}".`
+      );
+    }
+
+    // Aborted before successful checkout/pop: put stashed translations back on this branch.
+    if (stashAfterBranch === "pending") {
+      await runGit(["stash", "pop"]);
+    }
   }
 }
 

@@ -17,7 +17,7 @@ export async function translateStrings(
     return [];
   }
 
-  const words = strings.map(w => ({ t: 1, w, l: "weglot-translate-action" }));
+  const words = strings.map(w => ({ t: 1, w, l: "translate-action" }));
 
   const slices: Array<typeof words> = [];
   for (let start = 0; start < words.length; start += API_MAX_LENGTH) {

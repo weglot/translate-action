@@ -24,10 +24,6 @@ inputs:
     description: 'Comma-separated target language codes (default: all from Weglot project)'
     required: false
     default: ''
-  pr-branch:
-    description: 'Branch name for PR mode (default: weglot-translations-<timestamp>)'
-    required: false
-    default: ''
   github-token:
     description: 'Token for GitHub API and git push in PR mode (pass secrets.GITHUB_TOKEN or github.token)'
     required: false
@@ -36,8 +32,10 @@ inputs:
 outputs:
   output-path:
     description: 'Directory where translated files were written (files mode)'
+  pr-branch:
+    description: 'PR branch in pr mode: translations/<hex> from source-path, output-dir, and API key (not from languages)'
   pr-url:
-    description: 'URL of the created pull request (pr mode)'
+    description: 'URL of the pull request (pr mode)'
 
 runs:
   using: 'node24'
