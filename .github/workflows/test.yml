@@ -35,3 +35,21 @@ jobs:
         run: |
           cat test/fixtures/locales/fr.json
           test -f test/fixtures/locales/fr.json && echo "fr.json created" || exit 1
+
+      - name: Weglot Translate (pr mode)
+        uses: ./
+        with:
+          api-key: ${{ secrets.WEGLOT_API_KEY }}
+          source-path: test/fixtures/locales/en.json
+          output-mode: pr
+          languages: fr
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Weglot Translate (pr mode)
+        uses: ./
+        with:
+          api-key: ${{ secrets.WEGLOT_API_KEY }}
+          source-path: test/fixtures/locales/en.json
+          output-mode: pr
+          languages: fr,es
+          github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -13,11 +13,13 @@ module.exports = {
       "ts-jest",
       {
         tsconfig: {
+          ignoreDeprecations: "6.0",
           noImplicitAny: false,
           skipLibCheck: true,
           esModuleInterop: true,
           module: "commonjs",
           moduleResolution: "node",
+          types: ["node", "jest"],
         },
       },
     ],
