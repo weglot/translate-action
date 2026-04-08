@@ -28842,6 +28842,50 @@ function exec(commandLine, args, options) {
         return runner.exec();
     });
 }
+/**
+ * Exec a command and get the output.
+ * Output will be streamed to the live console.
+ * Returns promise with the exit code and collected stdout and stderr
+ *
+ * @param     commandLine           command to execute (can include additional args). Must be correctly escaped.
+ * @param     args                  optional arguments for tool. Escaping is handled by the lib.
+ * @param     options               optional exec options.  See ExecOptions
+ * @returns   Promise<ExecOutput>   exit code, stdout, and stderr
+ */
+function getExecOutput(commandLine, args, options) {
+    return __awaiter$1(this, void 0, void 0, function* () {
+        var _a, _b;
+        let stdout = '';
+        let stderr = '';
+        //Using string decoder covers the case where a mult-byte character is split
+        const stdoutDecoder = new require$$5$3.StringDecoder('utf8');
+        const stderrDecoder = new require$$5$3.StringDecoder('utf8');
+        const originalStdoutListener = (_a = options === null || options === void 0 ? void 0 : options.listeners) === null || _a === void 0 ? void 0 : _a.stdout;
+        const originalStdErrListener = (_b = options === null || options === void 0 ? void 0 : options.listeners) === null || _b === void 0 ? void 0 : _b.stderr;
+        const stdErrListener = (data) => {
+            stderr += stderrDecoder.write(data);
+            if (originalStdErrListener) {
+                originalStdErrListener(data);
+            }
+        };
+        const stdOutListener = (data) => {
+            stdout += stdoutDecoder.write(data);
+            if (originalStdoutListener) {
+                originalStdoutListener(data);
+            }
+        };
+        const listeners = Object.assign(Object.assign({}, options === null || options === void 0 ? void 0 : options.listeners), { stdout: stdOutListener, stderr: stdErrListener });
+        const exitCode = yield exec(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
+        //flush any remaining characters
+        stdout += stdoutDecoder.end();
+        stderr += stderrDecoder.end();
+        return {
+            exitCode,
+            stdout,
+            stderr
+        };
+    });
+}
 
 (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -34061,11 +34105,23 @@ function getOutputPath(sourceRelativePath, targetLang, sourceLang, outputDir, wo
 function gitWorkingDirectory() {
     return process.env.GITHUB_WORKSPACE || process.cwd();
 }
+const STASH_MESSAGE = "weglot-translate-action";
 async function runGit(args, ignoreReturnCode) {
     return exec("git", args, {
         cwd: gitWorkingDirectory(),
         ignoreReturnCode: ignoreReturnCode !== false,
     });
+}
+async function popWeglotStash() {
+    const { stdout: stashList } = await getExecOutput("git", ["stash", "list"], {
+        cwd: gitWorkingDirectory(),
+        ignoreReturnCode: true,
+    });
+    if (stashList.includes(STASH_MESSAGE) &&
+        (await runGit(["stash", "pop"])) !== 0) {
+        return false;
+    }
+    return true;
 }
 function computeTranslationPrBranchName(options) {
     const digest = node_crypto.createHash("sha256")
@@ -34210,7 +34266,7 @@ async function createPullRequest(workspace, writtenPaths, branchName, githubToke
         "stash",
         "push",
         "-m",
-        "weglot-translate-action",
+        STASH_MESSAGE,
         "--staged",
     ]);
     if (stashCode !== 0) {
@@ -34247,7 +34303,8 @@ async function createPullRequest(workspace, writtenPaths, branchName, githubToke
                 return;
             }
         }
-        if ((await runGit(["stash", "pop"])) !== 0) {
+        // Checks if we created a stash earlier (if there was no change, no stash is created so the pop will fail)
+        if (!(await popWeglotStash())) {
             stashAfterBranch = "pop_failed";
             setFailed("Could not apply stashed translations (conflicts?). Fix conflicts and run again.");
             return;
@@ -34313,7 +34370,7 @@ async function createPullRequest(workspace, writtenPaths, branchName, githubToke
         }
         // Aborted before successful checkout/pop: put stashed translations back on this branch.
         if (stashAfterBranch === "pending") {
-            await runGit(["stash", "pop"]);
+            await popWeglotStash();
         }
     }
 }

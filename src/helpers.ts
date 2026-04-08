@@ -1,9 +1,11 @@
-import { exec } from "@actions/exec";
+import { exec, getExecOutput } from "@actions/exec";
 import { createHash } from "node:crypto";
 
 function gitWorkingDirectory(): string {
   return process.env.GITHUB_WORKSPACE || process.cwd();
 }
+
+export const STASH_MESSAGE = "weglot-translate-action";
 
 export async function runGit(
   args: string[],
@@ -13,6 +15,21 @@ export async function runGit(
     cwd: gitWorkingDirectory(),
     ignoreReturnCode: ignoreReturnCode !== false,
   });
+}
+
+export async function popWeglotStash(): Promise<boolean> {
+  const { stdout: stashList } = await getExecOutput("git", ["stash", "list"], {
+    cwd: gitWorkingDirectory(),
+    ignoreReturnCode: true,
+  });
+  if (
+    stashList.includes(STASH_MESSAGE) &&
+    (await runGit(["stash", "pop"])) !== 0
+  ) {
+    return false;
+  }
+
+  return true;
 }
 
 export function computeTranslationPrBranchName(options: {

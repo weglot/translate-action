@@ -10,7 +10,12 @@ import {
   writeJson,
 } from "./file-types/json.js";
 import { resolveSourceFiles, getOutputPath } from "./files.js";
-import { computeTranslationPrBranchName, runGit } from "./helpers.js";
+import {
+  computeTranslationPrBranchName,
+  popWeglotStash,
+  runGit,
+  STASH_MESSAGE,
+} from "./helpers.js";
 
 function filterLanguages(
   languagesInput: string,
@@ -219,7 +224,7 @@ async function createPullRequest(
     "stash",
     "push",
     "-m",
-    "weglot-translate-action",
+    STASH_MESSAGE,
     "--staged",
   ]);
   if (stashCode !== 0) {
@@ -267,7 +272,8 @@ async function createPullRequest(
       }
     }
 
-    if ((await runGit(["stash", "pop"])) !== 0) {
+    // Checks if we created a stash earlier (if there was no change, no stash is created so the pop will fail)
+    if (!(await popWeglotStash())) {
       stashAfterBranch = "pop_failed";
       core.setFailed(
         "Could not apply stashed translations (conflicts?). Fix conflicts and run again."
@@ -348,7 +354,7 @@ async function createPullRequest(
 
     // Aborted before successful checkout/pop: put stashed translations back on this branch.
     if (stashAfterBranch === "pending") {
-      await runGit(["stash", "pop"]);
+      await popWeglotStash();
     }
   }
 }
