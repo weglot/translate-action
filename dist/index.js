@@ -33925,8 +33925,10 @@ async function translateStrings(opts) {
         const params = new URLSearchParams({
             api_key: apiKey,
             s: String(s),
-            v: version,
         });
+        if (version) {
+            params.set("v", String(version));
+        }
         const url = `${API_BASE}/translate?${params.toString()}`;
         const res = await fetch(url, {
             method: "POST",
@@ -34304,7 +34306,7 @@ async function main() {
         const settings = await fetchProjectSettings(apiKey);
         const language_from = settings.language_from;
         const versions = settings.versions;
-        const version = versions?.translations != null ? String(versions.translations) : "1";
+        const version = versions?.translation;
         const languagesFromSettings = (settings.languages ?? []);
         const targetLanguages = languagesInput
             ? filterLanguages(languagesInput, languagesFromSettings)

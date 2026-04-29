@@ -6,7 +6,7 @@ export interface TranslateOptions {
   lTo: string;
   requestUrl: string;
   strings: string[];
-  version: string;
+  version?: number;
 }
 
 export async function translateStrings(
@@ -35,8 +35,10 @@ export async function translateStrings(
     const params = new URLSearchParams({
       api_key: apiKey,
       s: String(s),
-      v: version,
     });
+    if (version) {
+      params.set("v", String(version));
+    }
     const url = `${API_BASE}/translate?${params.toString()}`;
     const res = await fetch(url, {
       method: "POST",

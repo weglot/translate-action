@@ -130,8 +130,7 @@ async function main(): Promise<void> {
     const settings = await fetchProjectSettings(apiKey);
     const language_from = settings.language_from as string;
     const versions = settings.versions as Record<string, unknown> | undefined;
-    const version =
-      versions?.translations != null ? String(versions.translations) : "1";
+    const version = versions?.translation as number | undefined;
     const languagesFromSettings = (settings.languages ?? []) as Array<{
       language_to: string;
       custom_code?: string;
