@@ -1,0 +1,8 @@
+{
+  "hello": "Pozdrav",
+  "welcome": "Dobrodošli u našu aplikaciju",
+  "nested": {
+    "title": "Podešavanja",
+    "description": "Konfigurišite svoje postavke"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "hello": "こんにちは",
+  "welcome": "当アプリへようこそ",
+  "nested": {
+    "title": "設定",
+    "description": "設定をカスタマイズする"
+  }
+}
