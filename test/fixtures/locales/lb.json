@@ -1,0 +1,8 @@
+{
+  "hello": "Hallo",
+  "welcome": "Wëllkomm op eiser App",
+  "nested": {
+    "title": "Astellungen",
+    "description": "Konfiguréiert Är Virléiften"
+  }
+}
