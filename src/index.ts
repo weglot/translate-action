@@ -14,29 +14,37 @@ import { computeTranslationPrBranchName } from "./helpers.js";
 import { createPullRequest } from "./github.js";
 import { UPDATE_COMMENT_TRIGGER } from "./constants.js";
 
+interface LanguageTarget {
+  languageTo: string;
+  code: string;
+}
+
 function filterLanguages(
   languagesInput: string,
   configuredLanguages: Array<{
     language_to: string;
     custom_code?: string;
   }>
-): string[] {
+): LanguageTarget[] {
   return languagesInput
     .split(",")
     .map(l => l.trim())
-    .filter(code => {
-      const ok = !!configuredLanguages.find(
+    .flatMap(code => {
+      const found = configuredLanguages.find(
         l => l.custom_code === code || l.language_to === code
       );
-      if (ok) {
-        return true;
+      if (!found) {
+        core.warning(
+          `Language "${code}" is not configured in your Weglot project; skipping.`
+        );
+        return [];
       }
-
-      core.warning(
-        `Language "${code}" is not configured in your Weglot project; skipping.`
-      );
-
-      return false;
+      return [
+        {
+          languageTo: found.language_to,
+          code: found.custom_code ?? found.language_to,
+        },
+      ];
     });
 }
 
@@ -129,16 +137,19 @@ async function main(): Promise<void> {
       custom_code?: string;
     }>;
 
-    const targetLanguages = languagesInput
+    const targetLanguages: LanguageTarget[] = languagesInput
       ? filterLanguages(languagesInput, languagesFromSettings)
-      : languagesFromSettings.map(l => l.language_to);
+      : languagesFromSettings.map(l => ({
+          languageTo: l.language_to,
+          code: l.custom_code ?? l.language_to,
+        }));
 
     if (targetLanguages.length === 0) {
       core.setFailed("No target languages to translate.");
       return;
     }
     core.info(
-      `Source language: ${language_from}. Target languages: ${targetLanguages.join(", ")}`
+      `Source language: ${language_from}. Target languages: ${targetLanguages.map(l => l.code).join(", ")}`
     );
 
     // Translate
@@ -169,12 +180,12 @@ async function main(): Promise<void> {
         continue;
       }
 
-      for (const lTo of targetLanguages) {
-        core.info(`Translating ${relativePath} -> ${lTo}...`);
+      for (const lang of targetLanguages) {
+        core.info(`Translating ${relativePath} -> ${lang.code}...`);
         const translated = await translateStrings({
           apiKey,
           lFrom: language_from,
-          lTo,
+          lTo: lang.languageTo,
           requestUrl,
           strings: values,
           version,
@@ -182,7 +193,7 @@ async function main(): Promise<void> {
         const translatedObj = applyTranslations(obj, paths, translated);
         const outPath = getOutputPath(
           relativePath,
-          lTo,
+          lang.code,
           language_from,
           outputDir,
           workspace

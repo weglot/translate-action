@@ -34299,13 +34299,18 @@ function filterLanguages(languagesInput, configuredLanguages) {
     return languagesInput
         .split(",")
         .map(l => l.trim())
-        .filter(code => {
-        const ok = !!configuredLanguages.find(l => l.custom_code === code || l.language_to === code);
-        if (ok) {
-            return true;
+        .flatMap(code => {
+        const found = configuredLanguages.find(l => l.custom_code === code || l.language_to === code);
+        if (!found) {
+            warning(`Language "${code}" is not configured in your Weglot project; skipping.`);
+            return [];
         }
-        warning(`Language "${code}" is not configured in your Weglot project; skipping.`);
-        return false;
+        return [
+            {
+                languageTo: found.language_to,
+                code: found.custom_code ?? found.language_to,
+            },
+        ];
     });
 }
 async function main() {
@@ -34376,12 +34381,15 @@ async function main() {
         const languagesFromSettings = (settings.languages ?? []);
         const targetLanguages = languagesInput
             ? filterLanguages(languagesInput, languagesFromSettings)
-            : languagesFromSettings.map(l => l.language_to);
+            : languagesFromSettings.map(l => ({
+                languageTo: l.language_to,
+                code: l.custom_code ?? l.language_to,
+            }));
         if (targetLanguages.length === 0) {
             setFailed("No target languages to translate.");
             return;
         }
-        info(`Source language: ${language_from}. Target languages: ${targetLanguages.join(", ")}`);
+        info(`Source language: ${language_from}. Target languages: ${targetLanguages.map(l => l.code).join(", ")}`);
         // Translate
         const sourceFiles = await resolveSourceFiles(sourcePath, workspace);
         if (sourceFiles.length === 0) {
@@ -34405,18 +34413,18 @@ async function main() {
                 info(`No strings to translate in ${relativePath}`);
                 continue;
             }
-            for (const lTo of targetLanguages) {
-                info(`Translating ${relativePath} -> ${lTo}...`);
+            for (const lang of targetLanguages) {
+                info(`Translating ${relativePath} -> ${lang.code}...`);
                 const translated = await translateStrings({
                     apiKey,
                     lFrom: language_from,
-                    lTo,
+                    lTo: lang.languageTo,
                     requestUrl,
                     strings: values,
                     version,
                 });
                 const translatedObj = applyTranslations(obj, paths, translated);
-                const outPath = getOutputPath(relativePath, lTo, language_from, outputDir, workspace);
+                const outPath = getOutputPath(relativePath, lang.code, language_from, outputDir, workspace);
                 await writeJson(outPath, translatedObj);
                 writtenPaths.push(outPath);
             }
