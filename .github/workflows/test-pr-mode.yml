@@ -1,0 +1,27 @@
+name: Test Translate Action (PR mode)
+
+on:
+  push:
+    branches: [master]
+  issue_comment:
+    types: [created]
+
+jobs:
+  test-translate-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Weglot Translate (pr mode)
+        uses: ./
+        with:
+          api-key: ${{ secrets.WEGLOT_API_KEY }}
+          source-path: test/fixtures/locales/en.json
+          output-mode: pr
+          github-token: ${{ secrets.GITHUB_TOKEN }}

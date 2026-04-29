@@ -35,3 +35,4 @@ jobs:
         run: |
           cat test/fixtures/locales/fr.json
           test -f test/fixtures/locales/fr.json && echo "fr.json created" || exit 1
+

@@ -33925,6 +33925,7 @@ function getOctokit(token, options, ...additionalPlugins) {
 const CDN_BASE = "https://cdn.weglot.com";
 const API_BASE = "https://cdn-api-weglot.com";
 const API_MAX_LENGTH = 600;
+const UPDATE_COMMENT_TRIGGER = "/update";
 
 async function fetchProjectSettings(apiKey) {
     const settingsKey = apiKey.startsWith("wg_") ? apiKey.slice(3) : apiKey;
@@ -34131,111 +34132,28 @@ function computeTranslationPrBranchName(options) {
     return `translations/${digest}`;
 }
 
-function filterLanguages(languagesInput, configuredLanguages) {
-    return languagesInput
-        .split(",")
-        .map(l => l.trim())
-        .filter(code => {
-        const ok = !!configuredLanguages.find(l => l.custom_code === code || l.language_to === code);
-        if (ok) {
-            return true;
-        }
-        warning(`Language "${code}" is not configured in your Weglot project; skipping.`);
-        return false;
-    });
+function issueCommentNumber() {
+    if (context.eventName !== "issue_comment") {
+        return undefined;
+    }
+    const payload = context.payload;
+    return payload.issue?.number;
 }
-async function main() {
+async function postComment(octokit, owner, repo, body) {
+    const issueNumber = issueCommentNumber();
+    if (issueNumber === undefined) {
+        return;
+    }
     try {
-        const apiKey = getInput("api-key", { required: true }).trim();
-        if (!apiKey) {
-            setFailed("api-key is required");
-            return;
-        }
-        const sourcePath = getInput("source-path", { required: true }).trim();
-        const outputDir = getInput("output-dir", { required: false }).trim();
-        const outputMode = (getInput("output-mode", { required: false }) || "files").toLowerCase();
-        const languagesInput = getInput("languages", { required: false })
-            .trim();
-        const githubToken = (getInput("github-token", { required: false }).trim() ||
-            process.env.GITHUB_TOKEN ||
-            "").trim();
-        const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
-        info("Fetching Weglot project settings...");
-        const settings = await fetchProjectSettings(apiKey);
-        const language_from = settings.language_from;
-        const versions = settings.versions;
-        const version = versions?.translations != null ? String(versions.translations) : "1";
-        const languagesFromSettings = (settings.languages ?? []);
-        const targetLanguages = languagesInput
-            ? filterLanguages(languagesInput, languagesFromSettings)
-            : languagesFromSettings.map(l => l.language_to);
-        if (targetLanguages.length === 0) {
-            setFailed("No target languages to translate.");
-            return;
-        }
-        info(`Source language: ${language_from}. Target languages: ${targetLanguages.join(", ")}`);
-        const sourceFiles = await resolveSourceFiles(sourcePath, workspace);
-        if (sourceFiles.length === 0) {
-            setFailed(`No files matched: ${sourcePath}`);
-            return;
-        }
-        info(`Found ${sourceFiles.length} source file(s).`);
-        const requestUrl = process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY
-            ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`
-            : "https://github.com";
-        const writtenPaths = [];
-        for (const sourceFilePath of sourceFiles) {
-            const relativePath = path.relative(workspace, sourceFilePath);
-            if (!relativePath.endsWith(".json")) {
-                warning(`Skipping non-JSON file: ${relativePath}`);
-                continue;
-            }
-            const obj = await readJson(sourceFilePath);
-            const { paths, values } = extractLeafStrings(obj);
-            if (values.length === 0) {
-                info(`No strings to translate in ${relativePath}`);
-                continue;
-            }
-            for (const lTo of targetLanguages) {
-                info(`Translating ${relativePath} -> ${lTo}...`);
-                const translated = await translateStrings({
-                    apiKey,
-                    lFrom: language_from,
-                    lTo,
-                    requestUrl,
-                    strings: values,
-                    version,
-                });
-                const translatedObj = applyTranslations(obj, paths, translated);
-                const outPath = getOutputPath(relativePath, lTo, language_from, outputDir, workspace);
-                await writeJson(outPath, translatedObj);
-                writtenPaths.push(outPath);
-            }
-        }
-        if (writtenPaths.length === 0) {
-            setFailed("No translated files were written.");
-            return;
-        }
-        const outputBase = outputDir ? path.join(workspace, outputDir) : workspace;
-        setOutput("output-path", outputBase);
-        if (outputMode === "pr") {
-            if (!githubToken) {
-                setFailed("PR mode requires a GitHub token. Add to your workflow: github-token: ${{ secrets.GITHUB_TOKEN }} (and permissions: contents: write, pull-requests: write).");
-                return;
-            }
-            const prBranchName = computeTranslationPrBranchName({
-                apiKey,
-                outputDir,
-                sourcePath,
-            });
-            setOutput("pr-branch", prBranchName);
-            info(`PR branch: ${prBranchName}`);
-            await createPullRequest(workspace, writtenPaths, prBranchName, githubToken);
-        }
+        await octokit.rest.issues.createComment({
+            body,
+            issue_number: issueNumber,
+            owner,
+            repo,
+        });
     }
     catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        setFailed(message);
+        warning(`Could not post comment to PR #${issueNumber}: ${err instanceof Error ? err.message : String(err)}`);
     }
 }
 async function createPullRequest(workspace, writtenPaths, branchName, githubToken) {
@@ -34319,6 +34237,7 @@ async function createPullRequest(workspace, writtenPaths, branchName, githubToke
             if (existingUrl) {
                 setOutput("pr-url", existingUrl);
                 info(`No new translation changes after rebasing onto ${defaultBranch}; open PR unchanged: ${existingUrl}`);
+                await postComment(octokit, owner, repo, "Translations are already up to date — no changes from Weglot.");
             }
             else {
                 info(`No translation changes to commit on ${branchName} and no open PR found.`);
@@ -34352,6 +34271,7 @@ async function createPullRequest(workspace, writtenPaths, branchName, githubToke
             info(`Updated existing pull request branch ${branchName}: ${prUrl}`);
         }
         setOutput("pr-url", prUrl);
+        await postComment(octokit, owner, repo, "Translations have been refreshed with the latest content from Weglot.");
     }
     finally {
         // Try to restore initial branch in all cases.
@@ -34372,6 +34292,160 @@ async function createPullRequest(workspace, writtenPaths, branchName, githubToke
         if (stashAfterBranch === "pending") {
             await popWeglotStash();
         }
+    }
+}
+
+function filterLanguages(languagesInput, configuredLanguages) {
+    return languagesInput
+        .split(",")
+        .map(l => l.trim())
+        .filter(code => {
+        const ok = !!configuredLanguages.find(l => l.custom_code === code || l.language_to === code);
+        if (ok) {
+            return true;
+        }
+        warning(`Language "${code}" is not configured in your Weglot project; skipping.`);
+        return false;
+    });
+}
+async function main() {
+    try {
+        const isIssueComment = context.eventName === "issue_comment";
+        // When triggered by a PR comment, only proceed for the UPDATE_COMMENT_TRIGGER command
+        // on the translations PR — ignore everything else silently.
+        if (isIssueComment) {
+            const payload = context.payload;
+            if (payload.comment?.body?.trim() !== UPDATE_COMMENT_TRIGGER) {
+                info(`Skipping: not a "${UPDATE_COMMENT_TRIGGER}" comment.`);
+                return;
+            }
+        }
+        // Inputs
+        const apiKey = getInput("api-key", { required: true }).trim();
+        if (!apiKey) {
+            setFailed("api-key is required");
+            return;
+        }
+        const sourcePath = getInput("source-path", { required: true }).trim();
+        const outputDir = getInput("output-dir", { required: false }).trim();
+        const outputMode = (getInput("output-mode", { required: false }) || "files").toLowerCase();
+        const languagesInput = getInput("languages", { required: false })
+            .trim();
+        const githubToken = (getInput("github-token", { required: false }).trim() ||
+            process.env.GITHUB_TOKEN ||
+            "").trim();
+        // Guard: verify the comment was posted on the translations PR, not any other PR.
+        if (isIssueComment) {
+            if (outputMode !== "pr") {
+                info(`Skipping: "${UPDATE_COMMENT_TRIGGER}" only applies in pr mode.`);
+                return;
+            }
+            const issueNumber = context.payload.issue?.number;
+            if (issueNumber !== undefined && githubToken) {
+                const octokit = getOctokit(githubToken);
+                const { owner, repo } = context.repo;
+                const expectedBranch = computeTranslationPrBranchName({
+                    apiKey,
+                    outputDir,
+                    sourcePath,
+                });
+                try {
+                    const { data: pr } = await octokit.rest.pulls.get({
+                        owner,
+                        pull_number: issueNumber,
+                        repo,
+                    });
+                    if (pr.head.ref !== expectedBranch) {
+                        info(`Skipping: "${UPDATE_COMMENT_TRIGGER}" was not posted on the translations PR.`);
+                        return;
+                    }
+                }
+                catch {
+                    info("Skipping: could not verify PR branch.");
+                    return;
+                }
+            }
+        }
+        // Project settings
+        const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
+        info("Fetching Weglot project settings...");
+        const settings = await fetchProjectSettings(apiKey);
+        const language_from = settings.language_from;
+        const versions = settings.versions;
+        const version = versions?.translations != null ? String(versions.translations) : "1";
+        const languagesFromSettings = (settings.languages ?? []);
+        const targetLanguages = languagesInput
+            ? filterLanguages(languagesInput, languagesFromSettings)
+            : languagesFromSettings.map(l => l.language_to);
+        if (targetLanguages.length === 0) {
+            setFailed("No target languages to translate.");
+            return;
+        }
+        info(`Source language: ${language_from}. Target languages: ${targetLanguages.join(", ")}`);
+        // Translate
+        const sourceFiles = await resolveSourceFiles(sourcePath, workspace);
+        if (sourceFiles.length === 0) {
+            setFailed(`No files matched: ${sourcePath}`);
+            return;
+        }
+        info(`Found ${sourceFiles.length} source file(s).`);
+        const requestUrl = process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY
+            ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`
+            : "https://github.com";
+        const writtenPaths = [];
+        for (const sourceFilePath of sourceFiles) {
+            const relativePath = path.relative(workspace, sourceFilePath);
+            if (!relativePath.endsWith(".json")) {
+                warning(`Skipping non-JSON file: ${relativePath}`);
+                continue;
+            }
+            const obj = await readJson(sourceFilePath);
+            const { paths, values } = extractLeafStrings(obj);
+            if (values.length === 0) {
+                info(`No strings to translate in ${relativePath}`);
+                continue;
+            }
+            for (const lTo of targetLanguages) {
+                info(`Translating ${relativePath} -> ${lTo}...`);
+                const translated = await translateStrings({
+                    apiKey,
+                    lFrom: language_from,
+                    lTo,
+                    requestUrl,
+                    strings: values,
+                    version,
+                });
+                const translatedObj = applyTranslations(obj, paths, translated);
+                const outPath = getOutputPath(relativePath, lTo, language_from, outputDir, workspace);
+                await writeJson(outPath, translatedObj);
+                writtenPaths.push(outPath);
+            }
+        }
+        if (writtenPaths.length === 0) {
+            setFailed("No translated files were written.");
+            return;
+        }
+        const outputBase = outputDir ? path.join(workspace, outputDir) : workspace;
+        setOutput("output-path", outputBase);
+        // PR mode: push translated files to a dedicated branch and open/update the PR
+        if (outputMode === "pr") {
+            if (!githubToken) {
+                setFailed("PR mode requires a GitHub token. Add to your workflow: github-token: ${{ secrets.GITHUB_TOKEN }} (and permissions: contents: write, pull-requests: write).");
+                return;
+            }
+            const prBranchName = computeTranslationPrBranchName({
+                apiKey,
+                outputDir,
+                sourcePath,
+            });
+            setOutput("pr-branch", prBranchName);
+            info(`PR branch: ${prBranchName}`);
+            await createPullRequest(workspace, writtenPaths, prBranchName, githubToken);
+        }
+    }
+    catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        setFailed(message);
     }
 }
 main();
