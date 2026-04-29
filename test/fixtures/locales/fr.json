@@ -1,6 +1,6 @@
 {
   "hello": "Bonjour",
-  "welcome": "Bienvenue dans notre application",
+  "welcome": "Bienvenue dans notre application ! test test",
   "nested": {
     "title": "Paramètres",
     "description": "Configurez vos préférences"
