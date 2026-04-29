@@ -28842,50 +28842,6 @@ function exec(commandLine, args, options) {
         return runner.exec();
     });
 }
-/**
- * Exec a command and get the output.
- * Output will be streamed to the live console.
- * Returns promise with the exit code and collected stdout and stderr
- *
- * @param     commandLine           command to execute (can include additional args). Must be correctly escaped.
- * @param     args                  optional arguments for tool. Escaping is handled by the lib.
- * @param     options               optional exec options.  See ExecOptions
- * @returns   Promise<ExecOutput>   exit code, stdout, and stderr
- */
-function getExecOutput(commandLine, args, options) {
-    return __awaiter$1(this, void 0, void 0, function* () {
-        var _a, _b;
-        let stdout = '';
-        let stderr = '';
-        //Using string decoder covers the case where a mult-byte character is split
-        const stdoutDecoder = new require$$5$3.StringDecoder('utf8');
-        const stderrDecoder = new require$$5$3.StringDecoder('utf8');
-        const originalStdoutListener = (_a = options === null || options === void 0 ? void 0 : options.listeners) === null || _a === void 0 ? void 0 : _a.stdout;
-        const originalStdErrListener = (_b = options === null || options === void 0 ? void 0 : options.listeners) === null || _b === void 0 ? void 0 : _b.stderr;
-        const stdErrListener = (data) => {
-            stderr += stderrDecoder.write(data);
-            if (originalStdErrListener) {
-                originalStdErrListener(data);
-            }
-        };
-        const stdOutListener = (data) => {
-            stdout += stdoutDecoder.write(data);
-            if (originalStdoutListener) {
-                originalStdoutListener(data);
-            }
-        };
-        const listeners = Object.assign(Object.assign({}, options === null || options === void 0 ? void 0 : options.listeners), { stdout: stdOutListener, stderr: stdErrListener });
-        const exitCode = yield exec(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
-        //flush any remaining characters
-        stdout += stdoutDecoder.end();
-        stderr += stderrDecoder.end();
-        return {
-            exitCode,
-            stdout,
-            stderr
-        };
-    });
-}
 
 (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -34106,23 +34062,11 @@ function getOutputPath(sourceRelativePath, targetLang, sourceLang, outputDir, wo
 function gitWorkingDirectory() {
     return process.env.GITHUB_WORKSPACE || process.cwd();
 }
-const STASH_MESSAGE = "weglot-translate-action";
 async function runGit(args, ignoreReturnCode) {
     return exec("git", args, {
         cwd: gitWorkingDirectory(),
         ignoreReturnCode: ignoreReturnCode !== false,
     });
-}
-async function popWeglotStash() {
-    const { stdout: stashList } = await getExecOutput("git", ["stash", "list"], {
-        cwd: gitWorkingDirectory(),
-        ignoreReturnCode: true,
-    });
-    if (stashList.includes(STASH_MESSAGE) &&
-        (await runGit(["stash", "pop"])) !== 0) {
-        return false;
-    }
-    return true;
 }
 function computeTranslationPrBranchName(options) {
     const digest = node_crypto.createHash("sha256")
@@ -34173,30 +34117,20 @@ async function createPullRequest(workspace, writtenPaths, branchName, githubToke
         });
         return data[0]?.html_url;
     };
-    // Refresh origin; decide between "new branch" and "track existing translations/*".
+    // Snapshot translation file contents before switching branches so we can
+    // re-write them after checkout without any stash machinery.
+    const fileContents = new Map();
+    for (const p of writtenPaths) {
+        fileContents.set(p, await promises.readFile(p));
+    }
     await runGit(["fetch", "origin"], false);
     const remoteBranchExists = (await runGit(["rev-parse", "--verify", `origin/${branchName}`])) === 0;
-    if (relativeWritten.length > 0) {
-        await runGit(["add", "--", ...relativeWritten], false);
-    }
-    // Stash staged translations so checkout/merge cannot strand them on the wrong branch.
-    const stashCode = await runGit([
-        "stash",
-        "push",
-        "-m",
-        STASH_MESSAGE,
-        "--staged",
-    ]);
-    if (stashCode !== 0) {
-        setFailed("Could not stash translation changes before switching branches.");
-        return;
-    }
-    let stashAfterBranch = "pending";
     try {
-        // Check out PR branch; if it already exists remotely, rebase it onto default first.
+        // -f discards any untracked translation files that would otherwise block checkout.
         if (remoteBranchExists) {
             if ((await runGit([
                 "checkout",
+                "-f",
                 "-B",
                 branchName,
                 `origin/${branchName}`,
@@ -34213,6 +34147,7 @@ async function createPullRequest(workspace, writtenPaths, branchName, githubToke
         else {
             if ((await runGit([
                 "checkout",
+                "-f",
                 "-B",
                 branchName,
                 `origin/${defaultBranch}`,
@@ -34221,13 +34156,11 @@ async function createPullRequest(workspace, writtenPaths, branchName, githubToke
                 return;
             }
         }
-        // Checks if we created a stash earlier (if there was no change, no stash is created so the pop will fail)
-        if (!(await popWeglotStash())) {
-            stashAfterBranch = "pop_failed";
-            setFailed("Could not apply stashed translations (conflicts?). Fix conflicts and run again.");
-            return;
+        // Re-write translation files from the snapshot — always wins over whatever
+        // was on the branch, with no conflict resolution needed.
+        for (const [filePath, content] of fileContents) {
+            await promises.writeFile(filePath, content);
         }
-        stashAfterBranch = "applied";
         if (relativeWritten.length > 0) {
             await runGit(["add", "--", ...relativeWritten], false);
         }
@@ -34245,7 +34178,6 @@ async function createPullRequest(workspace, writtenPaths, branchName, githubToke
             return;
         }
         await runGit(["commit", "-m", "Update Weglot translated localization files"], false);
-        // Push updates the branch; open a PR only when none exists for this head.
         // After rebase, history may diverge from origin → force-with-lease (not plain force).
         const pushCode = remoteBranchExists
             ? await runGit(["push", "--force-with-lease", "-u", "origin", branchName])
@@ -34274,7 +34206,6 @@ async function createPullRequest(workspace, writtenPaths, branchName, githubToke
         await postComment(octokit, owner, repo, "Translations have been refreshed with the latest content from Weglot.");
     }
     finally {
-        // Try to restore initial branch in all cases.
         if ((await runGit(["checkout", "-"])) === 0) {
             info("Restored initial branch.");
         }
@@ -34287,10 +34218,6 @@ async function createPullRequest(workspace, writtenPaths, branchName, githubToke
         }
         else {
             warning(`Could not restore the original branch. You may still be on "${branchName}".`);
-        }
-        // Aborted before successful checkout/pop: put stashed translations back on this branch.
-        if (stashAfterBranch === "pending") {
-            await popWeglotStash();
         }
     }
 }

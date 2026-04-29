@@ -1,7 +1,8 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "path";
-import { popWeglotStash, runGit, STASH_MESSAGE } from "./helpers.js";
+import { runGit } from "./helpers.js";
 
 export function issueCommentNumber(): number | undefined {
   if (github.context.eventName !== "issue_comment") {
@@ -69,38 +70,25 @@ export async function createPullRequest(
     return data[0]?.html_url;
   };
 
-  // Refresh origin; decide between "new branch" and "track existing translations/*".
+  // Snapshot translation file contents before switching branches so we can
+  // re-write them after checkout without any stash machinery.
+  const fileContents = new Map<string, Buffer>();
+  for (const p of writtenPaths) {
+    fileContents.set(p, await readFile(p));
+  }
+
   await runGit(["fetch", "origin"], false);
 
   const remoteBranchExists =
     (await runGit(["rev-parse", "--verify", `origin/${branchName}`])) === 0;
 
-  if (relativeWritten.length > 0) {
-    await runGit(["add", "--", ...relativeWritten], false);
-  }
-
-  // Stash staged translations so checkout/merge cannot strand them on the wrong branch.
-  const stashCode = await runGit([
-    "stash",
-    "push",
-    "-m",
-    STASH_MESSAGE,
-    "--staged",
-  ]);
-  if (stashCode !== 0) {
-    core.setFailed(
-      "Could not stash translation changes before switching branches."
-    );
-    return;
-  }
-
-  let stashAfterBranch: "pending" | "applied" | "pop_failed" = "pending";
   try {
-    // Check out PR branch; if it already exists remotely, rebase it onto default first.
+    // -f discards any untracked translation files that would otherwise block checkout.
     if (remoteBranchExists) {
       if (
         (await runGit([
           "checkout",
+          "-f",
           "-B",
           branchName,
           `origin/${branchName}`,
@@ -120,6 +108,7 @@ export async function createPullRequest(
       if (
         (await runGit([
           "checkout",
+          "-f",
           "-B",
           branchName,
           `origin/${defaultBranch}`,
@@ -132,15 +121,11 @@ export async function createPullRequest(
       }
     }
 
-    // Checks if we created a stash earlier (if there was no change, no stash is created so the pop will fail)
-    if (!(await popWeglotStash())) {
-      stashAfterBranch = "pop_failed";
-      core.setFailed(
-        "Could not apply stashed translations (conflicts?). Fix conflicts and run again."
-      );
-      return;
+    // Re-write translation files from the snapshot — always wins over whatever
+    // was on the branch, with no conflict resolution needed.
+    for (const [filePath, content] of fileContents) {
+      await writeFile(filePath, content);
     }
-    stashAfterBranch = "applied";
 
     if (relativeWritten.length > 0) {
       await runGit(["add", "--", ...relativeWritten], false);
@@ -173,7 +158,6 @@ export async function createPullRequest(
       false
     );
 
-    // Push updates the branch; open a PR only when none exists for this head.
     // After rebase, history may diverge from origin → force-with-lease (not plain force).
     const pushCode = remoteBranchExists
       ? await runGit(["push", "--force-with-lease", "-u", "origin", branchName])
@@ -206,7 +190,6 @@ export async function createPullRequest(
       "Translations have been refreshed with the latest content from Weglot."
     );
   } finally {
-    // Try to restore initial branch in all cases.
     if ((await runGit(["checkout", "-"])) === 0) {
       core.info("Restored initial branch.");
     } else if (
@@ -222,11 +205,6 @@ export async function createPullRequest(
       core.warning(
         `Could not restore the original branch. You may still be on "${branchName}".`
       );
-    }
-
-    // Aborted before successful checkout/pop: put stashed translations back on this branch.
-    if (stashAfterBranch === "pending") {
-      await popWeglotStash();
     }
   }
 }
