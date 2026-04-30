@@ -1,0 +1,16 @@
+# Normalize line endings
+* text=auto
+
+# Exclude from git archive exports
+.* export-ignore
+node_modules export-ignore
+test export-ignore
+yarn.lock export-ignore
+*.config.* export-ignore
+tsconfig*.json export-ignore
+jest.config.js export-ignore
+
+# Exclude from GitHub Linguist language statistics
+dist/** linguist-generated
+node_modules/** linguist-vendored
+test/** linguist-detectable=false
