@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs/promises";
+import { assertWithinWorkspace } from "../files.js";
 
 export function extractLeafStrings(
   obj: unknown,
@@ -65,8 +66,10 @@ export function applyTranslations(
 }
 
 export async function readJson(
+  workspace: string,
   filePath: string
 ): Promise<Record<string, unknown>> {
+  assertWithinWorkspace(workspace, filePath);
   const content = await fs.readFile(filePath, "utf8");
   try {
     return JSON.parse(content) as Record<string, unknown>;
@@ -77,9 +80,11 @@ export async function readJson(
 }
 
 export async function writeJson(
+  workspace: string,
   filePath: string,
   obj: Record<string, unknown>
 ): Promise<void> {
+  assertWithinWorkspace(workspace, filePath);
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   await fs.writeFile(filePath, JSON.stringify(obj, null, 2) + "\n", "utf8");
 }

@@ -69,4 +69,11 @@ describe("resolveSourceFiles", () => {
     const sorted = [...files].sort();
     expect(files).toEqual(sorted);
   });
+
+  it("rejects a path that resolves outside the workspace after glob expansion", async () => {
+    const outsideWorkspace = path.resolve(workspace, "..");
+    await expect(
+      resolveSourceFiles(outsideWorkspace, workspace)
+    ).rejects.toThrow("outside the workspace boundary");
+  });
 });

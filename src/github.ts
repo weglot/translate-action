@@ -2,6 +2,7 @@ import * as core from "@actions/core";
 import * as github from "@actions/github";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "path";
+import { assertWithinWorkspace } from "./files.js";
 import { runGit } from "./helpers.js";
 
 export function issueCommentNumber(): number | undefined {
@@ -74,6 +75,7 @@ export async function createPullRequest(
   // re-write them after checkout without any stash machinery.
   const fileContents = new Map<string, Buffer>();
   for (const p of writtenPaths) {
+    assertWithinWorkspace(workspace, p);
     fileContents.set(p, await readFile(p));
   }
 

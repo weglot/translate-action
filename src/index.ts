@@ -172,7 +172,7 @@ async function main(): Promise<void> {
         continue;
       }
 
-      const obj = await readJson(sourceFilePath);
+      const obj = await readJson(workspace, sourceFilePath);
       const { paths, values } = extractLeafStrings(obj);
       if (values.length === 0) {
         core.info(`No strings to translate in ${relativePath}`);
@@ -197,7 +197,7 @@ async function main(): Promise<void> {
           outputDir,
           workspace
         );
-        await writeJson(outPath, translatedObj);
+        await writeJson(workspace, outPath, translatedObj);
         writtenPaths.push(outPath);
       }
     }

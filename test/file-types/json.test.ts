@@ -81,8 +81,10 @@ describe("applyTranslations", () => {
 
 describe("readJson", () => {
   it("parses valid JSON file", async () => {
+    const workspace = path.join(__dirname, "..", "fixtures");
     const obj = await readJson(
-      path.join(__dirname, "..", "fixtures", "locales", "en.json")
+      workspace,
+      path.join(workspace, "locales", "en.json")
     );
     expect(obj).toHaveProperty("hello", "Hello");
     expect(obj).toHaveProperty("nested");
@@ -93,7 +95,7 @@ describe("readJson", () => {
     const badPath = path.join(tmpDir, "bad.json");
     await fs.mkdir(tmpDir, { recursive: true });
     await fs.writeFile(badPath, "not json {", "utf8");
-    await expect(readJson(badPath)).rejects.toThrow(/Invalid JSON/);
+    await expect(readJson(tmpDir, badPath)).rejects.toThrow(/Invalid JSON/);
     await fs.rm(tmpDir, { recursive: true, force: true });
   });
 });
@@ -103,7 +105,7 @@ describe("writeJson", () => {
     const tmpDir = path.join(os.tmpdir(), "translate-action-write-test");
     const outPath = path.join(tmpDir, "sub", "out.json");
     const obj = { key: "value" };
-    await writeJson(outPath, obj);
+    await writeJson(tmpDir, outPath, obj);
     const content = await fs.readFile(outPath, "utf8");
     expect(JSON.parse(content)).toEqual(obj);
     await fs.rm(tmpDir, { recursive: true, force: true });

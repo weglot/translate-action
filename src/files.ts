@@ -1,6 +1,19 @@
 import path from "path";
 import { glob } from "glob";
 
+export function assertWithinWorkspace(
+  workspace: string,
+  filePath: string
+): void {
+  const resolved = path.resolve(filePath);
+  const root = path.resolve(workspace);
+  if (resolved !== root && !resolved.startsWith(root + path.sep)) {
+    throw new Error(
+      `Path "${resolved}" is outside the workspace boundary "${root}".`
+    );
+  }
+}
+
 export async function resolveSourceFiles(
   sourcePath: string,
   workspace: string
@@ -8,7 +21,11 @@ export async function resolveSourceFiles(
   const pattern = path.isAbsolute(sourcePath)
     ? sourcePath
     : path.join(workspace, sourcePath);
+  assertWithinWorkspace(workspace, pattern);
   const files = await glob(pattern, { nodir: true, absolute: true });
+  for (const file of files) {
+    assertWithinWorkspace(workspace, file);
+  }
   return files.sort();
 }
 
@@ -52,5 +69,8 @@ export function getOutputPath(
 
   const newRelative = finalSegments.join(path.sep);
   const base = outputDir ? path.join(workspace, outputDir) : workspace;
-  return path.join(base, newRelative);
+  assertWithinWorkspace(workspace, base);
+  const result = path.join(base, newRelative);
+  assertWithinWorkspace(workspace, result);
+  return result;
 }
