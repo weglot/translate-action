@@ -11,9 +11,9 @@
     "test:watch": "yarn build && jest --watch"
   },
   "dependencies": {
-    "@actions/core": "^3.0.0",
+    "@actions/core": "^3.0.1",
     "@actions/exec": "^3.0.0",
-    "@actions/github": "^9.0.0",
+    "@actions/github": "^9.1.1",
     "@actions/io": "^3.0.2",
     "glob": "^13.0.6"
   },
