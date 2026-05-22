@@ -21,7 +21,7 @@ describe("getOutputPath", () => {
     expect(out).toBe(path.join(workspace, "locales", "fr", "main.json"));
   });
 
-  it("prepends output_dir when provided", () => {
+  it("places file directly under output_dir when provided", () => {
     const out = getOutputPath(
       "locales/en/main.json",
       "fr",
@@ -29,9 +29,12 @@ describe("getOutputPath", () => {
       "translated",
       workspace
     );
-    expect(out).toBe(
-      path.join(workspace, "translated", "locales", "fr", "main.json")
-    );
+    expect(out).toBe(path.join(workspace, "translated", "main.json"));
+  });
+
+  it("does not duplicate directory when output_dir matches source dirname", () => {
+    const out = getOutputPath("messages/fr.json", "en", "fr", "messages", workspace);
+    expect(out).toBe(path.join(workspace, "messages", "en.json"));
   });
 
   it("suffixes filename with target language when source language does not appear in path or filename", () => {

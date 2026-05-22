@@ -70,7 +70,8 @@ export function getOutputPath(
   const newRelative = finalSegments.join(path.sep);
   const base = outputDir ? path.join(workspace, outputDir) : workspace;
   assertWithinWorkspace(workspace, base);
-  const result = path.join(base, newRelative);
+  const relativeToBase = outputDir ? path.basename(newRelative) : newRelative;
+  const result = path.join(base, relativeToBase);
   assertWithinWorkspace(workspace, result);
   return result;
 }
