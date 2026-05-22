@@ -83,6 +83,14 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+> **Note — repo-level permission required:** PR mode also needs **"Allow GitHub Actions to create and approve pull requests"** enabled in your repository (Settings → Actions → General → Workflow permissions). This setting is **off by default** on new repositories. Without it, the action pushes the branch and exits with success, but no PR is opened.
+>
+> Enable it via the GitHub UI, or with the GitHub CLI:
+> ```bash
+> gh api -X PUT /repos/OWNER/REPO/actions/permissions/workflow \
+>   -F can_approve_pull_request_reviews=true
+> ```
+
 ## Inputs
 
 | Input | Required | Default | Description |
@@ -92,7 +100,7 @@ jobs:
 | `output-dir` | No | (same as source) | Directory for translated files. |
 | `output-mode` | No | `files` | `files` = write to disk; `pr` = push to deterministic branch `translations/<hash>` and open or update one PR per stream (see above). |
 | `languages` | No | (from project) | Comma-separated target codes (e.g. `fr,de`). If empty, uses all languages from your Weglot project. |
-| `github-token` | When `output-mode: pr` | - | Token for the GitHub API and `git push`. Use `${{ secrets.GITHUB_TOKEN }}`. Job needs `contents: write`, `issues: write`, and `pull-requests: write`. |
+| `github-token` | When `output-mode: pr` | - | Token for the GitHub API and `git push`. Use `${{ secrets.GITHUB_TOKEN }}`. Job needs `contents: write`, `issues: write`, and `pull-requests: write`. The repo must also have "Allow GitHub Actions to create and approve pull requests" enabled (see note above). |
 
 ## Outputs
 
