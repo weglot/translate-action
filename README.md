@@ -26,6 +26,39 @@ GitHub Action to translate localization files using your [Weglot](https://weglot
     languages: fr,de,es
 ```
 
+### Scheduled sync (keep repo in sync with Dashboard edits automatically)
+
+If you edit translations directly in the Weglot Dashboard, you can have the action pull those changes into the repo on a schedule — no manual comment or source-file push required. Add a `schedule:` trigger (and optionally `workflow_dispatch:` for on-demand runs):
+
+```yaml
+name: Sync translations from Weglot
+
+on:
+  schedule:
+    - cron: '0 3 * * *'   # nightly at 03:00 UTC
+  workflow_dispatch:        # allow manual trigger from the Actions tab
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history needed for git rebase in pr mode
+      - uses: weglot/translate-action@v1
+        with:
+          api-key: ${{ secrets.WEGLOT_API_KEY }}
+          source-path: locales/en.json
+          output-mode: pr
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+The action fetches the latest translations from Weglot (including any Dashboard edits) and opens or updates a `translations/<hash>` PR if anything changed. If the repo is already in sync, it exits cleanly with no commit or PR.
+
 ### Refresh translations on demand (comment trigger)
 
 If you update translations directly in the Weglot dashboard and want to pull those changes into the open PR without pushing new source-file commits, you can comment `/update` on the PR. The action re-fetches translations from Weglot and pushes a new commit if anything changed, then replies with the result.
