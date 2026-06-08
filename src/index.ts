@@ -1,7 +1,7 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 import path from "path";
-import { fetchProjectSettings } from "./settings.js";
+import { fetchProjectSettings, WeglotSettings } from "./settings.js";
 import { translateStrings } from "./translate.js";
 import {
   extractLeafStrings,
@@ -12,39 +12,33 @@ import {
 import { resolveSourceFiles, getOutputPath } from "./files.js";
 import { computeTranslationPrBranchName } from "./helpers.js";
 import { createPullRequest } from "./github.js";
-import { UPDATE_COMMENT_TRIGGER } from "./constants.js";
-
-interface LanguageTarget {
-  languageTo: string;
-  code: string;
-}
+import {
+  DEFAULT_TRANSLATION_TIMEOUT_SECONDS,
+  UPDATE_COMMENT_TRIGGER,
+} from "./constants.js";
 
 function filterLanguages(
   languagesInput: string,
-  configuredLanguages: Array<{
-    language_to: string;
-    custom_code?: string;
-  }>
-): LanguageTarget[] {
+  configuredLanguages: WeglotSettings["languages"]
+): string[] {
   return languagesInput
     .split(",")
     .map(l => l.trim())
     .flatMap(code => {
-      const found = configuredLanguages.find(
-        l => l.custom_code === code || l.language_to === code
-      );
+      const found = configuredLanguages.find(l => l.language_to === code);
       if (!found) {
         core.warning(
           `Language "${code}" is not configured in your Weglot project; skipping.`
         );
         return [];
       }
-      return [
-        {
-          languageTo: found.language_to,
-          code: found.custom_code ?? found.language_to,
-        },
-      ];
+      if (!found.enabled) {
+        core.warning(
+          `Language "${code}" is disabled in your Weglot project; skipping.`
+        );
+        return [];
+      }
+      return [found.language_to];
     });
 }
 
@@ -84,6 +78,19 @@ async function main(): Promise<void> {
       process.env.GITHUB_TOKEN ||
       ""
     ).trim();
+    const translationTimeoutInput = core
+      .getInput("translation-timeout", { required: false })
+      .trim();
+    const parsedTimeout = Number(translationTimeoutInput);
+    const timeoutIsValid = Number.isFinite(parsedTimeout) && parsedTimeout > 0;
+    if (translationTimeoutInput && !timeoutIsValid) {
+      core.warning(
+        `Invalid translation-timeout "${translationTimeoutInput}"; using default ${DEFAULT_TRANSLATION_TIMEOUT_SECONDS}s.`
+      );
+    }
+    const timeoutSeconds = timeoutIsValid
+      ? parsedTimeout
+      : DEFAULT_TRANSLATION_TIMEOUT_SECONDS;
 
     // Guard: verify the comment was posted on the translations PR, not any other PR.
     if (isIssueComment) {
@@ -128,27 +135,20 @@ async function main(): Promise<void> {
 
     core.info("Fetching Weglot project settings...");
     const settings = await fetchProjectSettings(apiKey);
-    const language_from = settings.language_from as string;
-    const versions = settings.versions as Record<string, unknown> | undefined;
-    const version = versions?.translation as number | undefined;
-    const languagesFromSettings = (settings.languages ?? []) as Array<{
-      language_to: string;
-      custom_code?: string;
-    }>;
+    const language_from = settings.language_from;
+    const apiBaseUrl = settings.api_base_url;
+    const languagesFromSettings = settings.languages;
 
-    const targetLanguages: LanguageTarget[] = languagesInput
+    const targetLanguages: string[] = languagesInput
       ? filterLanguages(languagesInput, languagesFromSettings)
-      : languagesFromSettings.map(l => ({
-          languageTo: l.language_to,
-          code: l.custom_code ?? l.language_to,
-        }));
+      : languagesFromSettings.filter(l => l.enabled).map(l => l.language_to);
 
     if (targetLanguages.length === 0) {
       core.setFailed("No target languages to translate.");
       return;
     }
     core.info(
-      `Source language: ${language_from}. Target languages: ${targetLanguages.map(l => l.code).join(", ")}`
+      `Source language: ${language_from}. Target languages: ${targetLanguages.join(", ")}`
     );
 
     // Translate
@@ -163,6 +163,7 @@ async function main(): Promise<void> {
       process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY
         ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`
         : "https://github.com";
+    const deadline = Date.now() + timeoutSeconds * 1000;
 
     const writtenPaths: string[] = [];
     for (const sourceFilePath of sourceFiles) {
@@ -180,19 +181,29 @@ async function main(): Promise<void> {
       }
 
       for (const lang of targetLanguages) {
-        core.info(`Translating ${relativePath} -> ${lang.code}...`);
-        const translated = await translateStrings({
-          apiKey,
-          lFrom: language_from,
-          lTo: lang.languageTo,
-          requestUrl,
-          strings: values,
-          version,
-        });
+        core.info(`Translating ${relativePath} -> ${lang}...`);
+        let translated: string[];
+        try {
+          translated = await translateStrings({
+            apiBaseUrl,
+            apiKey,
+            deadline,
+            lFrom: language_from,
+            lTo: lang,
+            requestUrl,
+            strings: values,
+          });
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err);
+          throw new Error(
+            `Translating ${relativePath} -> ${lang}: ${message}`,
+            { cause: err }
+          );
+        }
         const translatedObj = applyTranslations(obj, paths, translated);
         const outPath = getOutputPath(
           relativePath,
-          lang.code,
+          lang,
           language_from,
           outputDir,
           workspace

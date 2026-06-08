@@ -21,9 +21,13 @@ inputs:
     required: false
     default: 'files'
   languages:
-    description: 'Comma-separated target language codes (default: all from Weglot project)'
+    description: 'Comma-separated target language codes from your Weglot project (e.g. fr,de). Default: all enabled languages.'
     required: false
     default: ''
+  translation-timeout:
+    description: 'Max seconds to wait for queued LLM translations to resolve before failing. Default: 300.'
+    required: false
+    default: '300'
   github-token:
     description: 'Token for GitHub API and git push in PR mode (pass secrets.GITHUB_TOKEN or github.token)'
     required: false

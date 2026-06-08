@@ -1,12 +1,17 @@
-import { CDN_BASE } from "./constants.js";
+const SETTINGS_BASE = "https://api.weglot.com";
 
-export type WeglotSettings = Record<string, unknown>;
+export interface WeglotSettings {
+  language_from: string;
+  api_base_url: string;
+  product: string;
+  languages: Array<{ language_to: string; enabled: boolean }>;
+}
 
 export async function fetchProjectSettings(
   apiKey: string
 ): Promise<WeglotSettings> {
-  const settingsKey = apiKey.startsWith("wg_") ? apiKey.slice(3) : apiKey;
-  const url = `${CDN_BASE}/projects-settings/${settingsKey}.json`;
+  const params = new URLSearchParams({ api_key: apiKey });
+  const url = `${SETTINGS_BASE}/project-settings?${params.toString()}`;
 
   const res = await fetch(url, {
     method: "GET",
@@ -29,11 +34,13 @@ export async function fetchProjectSettings(
     );
   }
 
-  const data = (await res.json()) as Record<string, unknown>;
-  const settings: WeglotSettings = (data.settings ?? data) as Record<
-    string,
-    unknown
-  >;
+  const settings = (await res.json()) as WeglotSettings;
+
+  if (settings.product !== "2.0") {
+    throw new Error(
+      `This action requires a Weglot v2 project (product "2.0"), but got "${settings.product ?? "unknown"}". Please use a Weglot v2 API key.`
+    );
+  }
 
   return settings;
 }

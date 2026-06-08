@@ -4165,12 +4165,12 @@ var hasRequiredConstants$3;
 function requireConstants$3 () {
 	if (hasRequiredConstants$3) return constants$3;
 	hasRequiredConstants$3 = 1;
-	(function (exports) {
-		Object.defineProperty(exports, "__esModule", { value: true });
-		exports.SPECIAL_HEADERS = exports.MINOR = exports.MAJOR = exports.HTAB_SP_VCHAR_OBS_TEXT = exports.QUOTED_STRING = exports.CONNECTION_TOKEN_CHARS = exports.HEADER_CHARS = exports.TOKEN = exports.HEX = exports.URL_CHAR = exports.USERINFO_CHARS = exports.MARK = exports.ALPHANUM = exports.NUM = exports.HEX_MAP = exports.NUM_MAP = exports.ALPHA = exports.STATUSES_HTTP = exports.H_METHOD_MAP = exports.METHOD_MAP = exports.METHODS_RTSP = exports.METHODS_ICE = exports.METHODS_HTTP = exports.HEADER_STATE = exports.FINISH = exports.STATUSES = exports.METHODS = exports.LENIENT_FLAGS = exports.FLAGS = exports.TYPE = exports.ERROR = void 0;
+	(function (exports$1) {
+		Object.defineProperty(exports$1, "__esModule", { value: true });
+		exports$1.SPECIAL_HEADERS = exports$1.MINOR = exports$1.MAJOR = exports$1.HTAB_SP_VCHAR_OBS_TEXT = exports$1.QUOTED_STRING = exports$1.CONNECTION_TOKEN_CHARS = exports$1.HEADER_CHARS = exports$1.TOKEN = exports$1.HEX = exports$1.URL_CHAR = exports$1.USERINFO_CHARS = exports$1.MARK = exports$1.ALPHANUM = exports$1.NUM = exports$1.HEX_MAP = exports$1.NUM_MAP = exports$1.ALPHA = exports$1.STATUSES_HTTP = exports$1.H_METHOD_MAP = exports$1.METHOD_MAP = exports$1.METHODS_RTSP = exports$1.METHODS_ICE = exports$1.METHODS_HTTP = exports$1.HEADER_STATE = exports$1.FINISH = exports$1.STATUSES = exports$1.METHODS = exports$1.LENIENT_FLAGS = exports$1.FLAGS = exports$1.TYPE = exports$1.ERROR = void 0;
 		const utils_1 = requireUtils();
 		// Emums
-		exports.ERROR = {
+		exports$1.ERROR = {
 		    OK: 0,
 		    INTERNAL: 1,
 		    STRICT: 2,
@@ -4209,12 +4209,12 @@ function requireConstants$3 () {
 		    CB_RESET: 31,
 		    CB_PROTOCOL_COMPLETE: 38,
 		};
-		exports.TYPE = {
+		exports$1.TYPE = {
 		    BOTH: 0, // default
 		    REQUEST: 1,
 		    RESPONSE: 2,
 		};
-		exports.FLAGS = {
+		exports$1.FLAGS = {
 		    CONNECTION_KEEP_ALIVE: 1 << 0,
 		    CONNECTION_CLOSE: 1 << 1,
 		    CONNECTION_UPGRADE: 1 << 2,
@@ -4226,7 +4226,7 @@ function requireConstants$3 () {
 		    // 1 << 8 is unused
 		    TRANSFER_ENCODING: 1 << 9,
 		};
-		exports.LENIENT_FLAGS = {
+		exports$1.LENIENT_FLAGS = {
 		    HEADERS: 1 << 0,
 		    CHUNKED_LENGTH: 1 << 1,
 		    KEEP_ALIVE: 1 << 2,
@@ -4238,7 +4238,7 @@ function requireConstants$3 () {
 		    OPTIONAL_CR_BEFORE_LF: 1 << 8,
 		    SPACES_AFTER_CHUNK_SIZE: 1 << 9,
 		};
-		exports.METHODS = {
+		exports$1.METHODS = {
 		    'DELETE': 0,
 		    'GET': 1,
 		    'HEAD': 2,
@@ -4299,7 +4299,7 @@ function requireConstants$3 () {
 		    /* DRAFT https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-02.html */
 		    'QUERY': 46,
 		};
-		exports.STATUSES = {
+		exports$1.STATUSES = {
 		    CONTINUE: 100,
 		    SWITCHING_PROTOCOLS: 101,
 		    PROCESSING: 102,
@@ -4400,12 +4400,12 @@ function requireConstants$3 () {
 		    NETWORK_READ_TIMEOUT: 598, // Unofficial
 		    NETWORK_CONNECT_TIMEOUT: 599, // Unofficial
 		};
-		exports.FINISH = {
+		exports$1.FINISH = {
 		    SAFE: 0,
 		    SAFE_WITH_CB: 1,
 		    UNSAFE: 2,
 		};
-		exports.HEADER_STATE = {
+		exports$1.HEADER_STATE = {
 		    GENERAL: 0,
 		    CONNECTION: 1,
 		    CONTENT_LENGTH: 2,
@@ -4417,203 +4417,203 @@ function requireConstants$3 () {
 		    TRANSFER_ENCODING_CHUNKED: 8,
 		};
 		// C headers
-		exports.METHODS_HTTP = [
-		    exports.METHODS.DELETE,
-		    exports.METHODS.GET,
-		    exports.METHODS.HEAD,
-		    exports.METHODS.POST,
-		    exports.METHODS.PUT,
-		    exports.METHODS.CONNECT,
-		    exports.METHODS.OPTIONS,
-		    exports.METHODS.TRACE,
-		    exports.METHODS.COPY,
-		    exports.METHODS.LOCK,
-		    exports.METHODS.MKCOL,
-		    exports.METHODS.MOVE,
-		    exports.METHODS.PROPFIND,
-		    exports.METHODS.PROPPATCH,
-		    exports.METHODS.SEARCH,
-		    exports.METHODS.UNLOCK,
-		    exports.METHODS.BIND,
-		    exports.METHODS.REBIND,
-		    exports.METHODS.UNBIND,
-		    exports.METHODS.ACL,
-		    exports.METHODS.REPORT,
-		    exports.METHODS.MKACTIVITY,
-		    exports.METHODS.CHECKOUT,
-		    exports.METHODS.MERGE,
-		    exports.METHODS['M-SEARCH'],
-		    exports.METHODS.NOTIFY,
-		    exports.METHODS.SUBSCRIBE,
-		    exports.METHODS.UNSUBSCRIBE,
-		    exports.METHODS.PATCH,
-		    exports.METHODS.PURGE,
-		    exports.METHODS.MKCALENDAR,
-		    exports.METHODS.LINK,
-		    exports.METHODS.UNLINK,
-		    exports.METHODS.PRI,
+		exports$1.METHODS_HTTP = [
+		    exports$1.METHODS.DELETE,
+		    exports$1.METHODS.GET,
+		    exports$1.METHODS.HEAD,
+		    exports$1.METHODS.POST,
+		    exports$1.METHODS.PUT,
+		    exports$1.METHODS.CONNECT,
+		    exports$1.METHODS.OPTIONS,
+		    exports$1.METHODS.TRACE,
+		    exports$1.METHODS.COPY,
+		    exports$1.METHODS.LOCK,
+		    exports$1.METHODS.MKCOL,
+		    exports$1.METHODS.MOVE,
+		    exports$1.METHODS.PROPFIND,
+		    exports$1.METHODS.PROPPATCH,
+		    exports$1.METHODS.SEARCH,
+		    exports$1.METHODS.UNLOCK,
+		    exports$1.METHODS.BIND,
+		    exports$1.METHODS.REBIND,
+		    exports$1.METHODS.UNBIND,
+		    exports$1.METHODS.ACL,
+		    exports$1.METHODS.REPORT,
+		    exports$1.METHODS.MKACTIVITY,
+		    exports$1.METHODS.CHECKOUT,
+		    exports$1.METHODS.MERGE,
+		    exports$1.METHODS['M-SEARCH'],
+		    exports$1.METHODS.NOTIFY,
+		    exports$1.METHODS.SUBSCRIBE,
+		    exports$1.METHODS.UNSUBSCRIBE,
+		    exports$1.METHODS.PATCH,
+		    exports$1.METHODS.PURGE,
+		    exports$1.METHODS.MKCALENDAR,
+		    exports$1.METHODS.LINK,
+		    exports$1.METHODS.UNLINK,
+		    exports$1.METHODS.PRI,
 		    // TODO(indutny): should we allow it with HTTP?
-		    exports.METHODS.SOURCE,
-		    exports.METHODS.QUERY,
+		    exports$1.METHODS.SOURCE,
+		    exports$1.METHODS.QUERY,
 		];
-		exports.METHODS_ICE = [
-		    exports.METHODS.SOURCE,
+		exports$1.METHODS_ICE = [
+		    exports$1.METHODS.SOURCE,
 		];
-		exports.METHODS_RTSP = [
-		    exports.METHODS.OPTIONS,
-		    exports.METHODS.DESCRIBE,
-		    exports.METHODS.ANNOUNCE,
-		    exports.METHODS.SETUP,
-		    exports.METHODS.PLAY,
-		    exports.METHODS.PAUSE,
-		    exports.METHODS.TEARDOWN,
-		    exports.METHODS.GET_PARAMETER,
-		    exports.METHODS.SET_PARAMETER,
-		    exports.METHODS.REDIRECT,
-		    exports.METHODS.RECORD,
-		    exports.METHODS.FLUSH,
+		exports$1.METHODS_RTSP = [
+		    exports$1.METHODS.OPTIONS,
+		    exports$1.METHODS.DESCRIBE,
+		    exports$1.METHODS.ANNOUNCE,
+		    exports$1.METHODS.SETUP,
+		    exports$1.METHODS.PLAY,
+		    exports$1.METHODS.PAUSE,
+		    exports$1.METHODS.TEARDOWN,
+		    exports$1.METHODS.GET_PARAMETER,
+		    exports$1.METHODS.SET_PARAMETER,
+		    exports$1.METHODS.REDIRECT,
+		    exports$1.METHODS.RECORD,
+		    exports$1.METHODS.FLUSH,
 		    // For AirPlay
-		    exports.METHODS.GET,
-		    exports.METHODS.POST,
+		    exports$1.METHODS.GET,
+		    exports$1.METHODS.POST,
 		];
-		exports.METHOD_MAP = (0, utils_1.enumToMap)(exports.METHODS);
-		exports.H_METHOD_MAP = Object.fromEntries(Object.entries(exports.METHODS).filter(([k]) => k.startsWith('H')));
-		exports.STATUSES_HTTP = [
-		    exports.STATUSES.CONTINUE,
-		    exports.STATUSES.SWITCHING_PROTOCOLS,
-		    exports.STATUSES.PROCESSING,
-		    exports.STATUSES.EARLY_HINTS,
-		    exports.STATUSES.RESPONSE_IS_STALE,
-		    exports.STATUSES.REVALIDATION_FAILED,
-		    exports.STATUSES.DISCONNECTED_OPERATION,
-		    exports.STATUSES.HEURISTIC_EXPIRATION,
-		    exports.STATUSES.MISCELLANEOUS_WARNING,
-		    exports.STATUSES.OK,
-		    exports.STATUSES.CREATED,
-		    exports.STATUSES.ACCEPTED,
-		    exports.STATUSES.NON_AUTHORITATIVE_INFORMATION,
-		    exports.STATUSES.NO_CONTENT,
-		    exports.STATUSES.RESET_CONTENT,
-		    exports.STATUSES.PARTIAL_CONTENT,
-		    exports.STATUSES.MULTI_STATUS,
-		    exports.STATUSES.ALREADY_REPORTED,
-		    exports.STATUSES.TRANSFORMATION_APPLIED,
-		    exports.STATUSES.IM_USED,
-		    exports.STATUSES.MISCELLANEOUS_PERSISTENT_WARNING,
-		    exports.STATUSES.MULTIPLE_CHOICES,
-		    exports.STATUSES.MOVED_PERMANENTLY,
-		    exports.STATUSES.FOUND,
-		    exports.STATUSES.SEE_OTHER,
-		    exports.STATUSES.NOT_MODIFIED,
-		    exports.STATUSES.USE_PROXY,
-		    exports.STATUSES.SWITCH_PROXY,
-		    exports.STATUSES.TEMPORARY_REDIRECT,
-		    exports.STATUSES.PERMANENT_REDIRECT,
-		    exports.STATUSES.BAD_REQUEST,
-		    exports.STATUSES.UNAUTHORIZED,
-		    exports.STATUSES.PAYMENT_REQUIRED,
-		    exports.STATUSES.FORBIDDEN,
-		    exports.STATUSES.NOT_FOUND,
-		    exports.STATUSES.METHOD_NOT_ALLOWED,
-		    exports.STATUSES.NOT_ACCEPTABLE,
-		    exports.STATUSES.PROXY_AUTHENTICATION_REQUIRED,
-		    exports.STATUSES.REQUEST_TIMEOUT,
-		    exports.STATUSES.CONFLICT,
-		    exports.STATUSES.GONE,
-		    exports.STATUSES.LENGTH_REQUIRED,
-		    exports.STATUSES.PRECONDITION_FAILED,
-		    exports.STATUSES.PAYLOAD_TOO_LARGE,
-		    exports.STATUSES.URI_TOO_LONG,
-		    exports.STATUSES.UNSUPPORTED_MEDIA_TYPE,
-		    exports.STATUSES.RANGE_NOT_SATISFIABLE,
-		    exports.STATUSES.EXPECTATION_FAILED,
-		    exports.STATUSES.IM_A_TEAPOT,
-		    exports.STATUSES.PAGE_EXPIRED,
-		    exports.STATUSES.ENHANCE_YOUR_CALM,
-		    exports.STATUSES.MISDIRECTED_REQUEST,
-		    exports.STATUSES.UNPROCESSABLE_ENTITY,
-		    exports.STATUSES.LOCKED,
-		    exports.STATUSES.FAILED_DEPENDENCY,
-		    exports.STATUSES.TOO_EARLY,
-		    exports.STATUSES.UPGRADE_REQUIRED,
-		    exports.STATUSES.PRECONDITION_REQUIRED,
-		    exports.STATUSES.TOO_MANY_REQUESTS,
-		    exports.STATUSES.REQUEST_HEADER_FIELDS_TOO_LARGE_UNOFFICIAL,
-		    exports.STATUSES.REQUEST_HEADER_FIELDS_TOO_LARGE,
-		    exports.STATUSES.LOGIN_TIMEOUT,
-		    exports.STATUSES.NO_RESPONSE,
-		    exports.STATUSES.RETRY_WITH,
-		    exports.STATUSES.BLOCKED_BY_PARENTAL_CONTROL,
-		    exports.STATUSES.UNAVAILABLE_FOR_LEGAL_REASONS,
-		    exports.STATUSES.CLIENT_CLOSED_LOAD_BALANCED_REQUEST,
-		    exports.STATUSES.INVALID_X_FORWARDED_FOR,
-		    exports.STATUSES.REQUEST_HEADER_TOO_LARGE,
-		    exports.STATUSES.SSL_CERTIFICATE_ERROR,
-		    exports.STATUSES.SSL_CERTIFICATE_REQUIRED,
-		    exports.STATUSES.HTTP_REQUEST_SENT_TO_HTTPS_PORT,
-		    exports.STATUSES.INVALID_TOKEN,
-		    exports.STATUSES.CLIENT_CLOSED_REQUEST,
-		    exports.STATUSES.INTERNAL_SERVER_ERROR,
-		    exports.STATUSES.NOT_IMPLEMENTED,
-		    exports.STATUSES.BAD_GATEWAY,
-		    exports.STATUSES.SERVICE_UNAVAILABLE,
-		    exports.STATUSES.GATEWAY_TIMEOUT,
-		    exports.STATUSES.HTTP_VERSION_NOT_SUPPORTED,
-		    exports.STATUSES.VARIANT_ALSO_NEGOTIATES,
-		    exports.STATUSES.INSUFFICIENT_STORAGE,
-		    exports.STATUSES.LOOP_DETECTED,
-		    exports.STATUSES.BANDWIDTH_LIMIT_EXCEEDED,
-		    exports.STATUSES.NOT_EXTENDED,
-		    exports.STATUSES.NETWORK_AUTHENTICATION_REQUIRED,
-		    exports.STATUSES.WEB_SERVER_UNKNOWN_ERROR,
-		    exports.STATUSES.WEB_SERVER_IS_DOWN,
-		    exports.STATUSES.CONNECTION_TIMEOUT,
-		    exports.STATUSES.ORIGIN_IS_UNREACHABLE,
-		    exports.STATUSES.TIMEOUT_OCCURED,
-		    exports.STATUSES.SSL_HANDSHAKE_FAILED,
-		    exports.STATUSES.INVALID_SSL_CERTIFICATE,
-		    exports.STATUSES.RAILGUN_ERROR,
-		    exports.STATUSES.SITE_IS_OVERLOADED,
-		    exports.STATUSES.SITE_IS_FROZEN,
-		    exports.STATUSES.IDENTITY_PROVIDER_AUTHENTICATION_ERROR,
-		    exports.STATUSES.NETWORK_READ_TIMEOUT,
-		    exports.STATUSES.NETWORK_CONNECT_TIMEOUT,
+		exports$1.METHOD_MAP = (0, utils_1.enumToMap)(exports$1.METHODS);
+		exports$1.H_METHOD_MAP = Object.fromEntries(Object.entries(exports$1.METHODS).filter(([k]) => k.startsWith('H')));
+		exports$1.STATUSES_HTTP = [
+		    exports$1.STATUSES.CONTINUE,
+		    exports$1.STATUSES.SWITCHING_PROTOCOLS,
+		    exports$1.STATUSES.PROCESSING,
+		    exports$1.STATUSES.EARLY_HINTS,
+		    exports$1.STATUSES.RESPONSE_IS_STALE,
+		    exports$1.STATUSES.REVALIDATION_FAILED,
+		    exports$1.STATUSES.DISCONNECTED_OPERATION,
+		    exports$1.STATUSES.HEURISTIC_EXPIRATION,
+		    exports$1.STATUSES.MISCELLANEOUS_WARNING,
+		    exports$1.STATUSES.OK,
+		    exports$1.STATUSES.CREATED,
+		    exports$1.STATUSES.ACCEPTED,
+		    exports$1.STATUSES.NON_AUTHORITATIVE_INFORMATION,
+		    exports$1.STATUSES.NO_CONTENT,
+		    exports$1.STATUSES.RESET_CONTENT,
+		    exports$1.STATUSES.PARTIAL_CONTENT,
+		    exports$1.STATUSES.MULTI_STATUS,
+		    exports$1.STATUSES.ALREADY_REPORTED,
+		    exports$1.STATUSES.TRANSFORMATION_APPLIED,
+		    exports$1.STATUSES.IM_USED,
+		    exports$1.STATUSES.MISCELLANEOUS_PERSISTENT_WARNING,
+		    exports$1.STATUSES.MULTIPLE_CHOICES,
+		    exports$1.STATUSES.MOVED_PERMANENTLY,
+		    exports$1.STATUSES.FOUND,
+		    exports$1.STATUSES.SEE_OTHER,
+		    exports$1.STATUSES.NOT_MODIFIED,
+		    exports$1.STATUSES.USE_PROXY,
+		    exports$1.STATUSES.SWITCH_PROXY,
+		    exports$1.STATUSES.TEMPORARY_REDIRECT,
+		    exports$1.STATUSES.PERMANENT_REDIRECT,
+		    exports$1.STATUSES.BAD_REQUEST,
+		    exports$1.STATUSES.UNAUTHORIZED,
+		    exports$1.STATUSES.PAYMENT_REQUIRED,
+		    exports$1.STATUSES.FORBIDDEN,
+		    exports$1.STATUSES.NOT_FOUND,
+		    exports$1.STATUSES.METHOD_NOT_ALLOWED,
+		    exports$1.STATUSES.NOT_ACCEPTABLE,
+		    exports$1.STATUSES.PROXY_AUTHENTICATION_REQUIRED,
+		    exports$1.STATUSES.REQUEST_TIMEOUT,
+		    exports$1.STATUSES.CONFLICT,
+		    exports$1.STATUSES.GONE,
+		    exports$1.STATUSES.LENGTH_REQUIRED,
+		    exports$1.STATUSES.PRECONDITION_FAILED,
+		    exports$1.STATUSES.PAYLOAD_TOO_LARGE,
+		    exports$1.STATUSES.URI_TOO_LONG,
+		    exports$1.STATUSES.UNSUPPORTED_MEDIA_TYPE,
+		    exports$1.STATUSES.RANGE_NOT_SATISFIABLE,
+		    exports$1.STATUSES.EXPECTATION_FAILED,
+		    exports$1.STATUSES.IM_A_TEAPOT,
+		    exports$1.STATUSES.PAGE_EXPIRED,
+		    exports$1.STATUSES.ENHANCE_YOUR_CALM,
+		    exports$1.STATUSES.MISDIRECTED_REQUEST,
+		    exports$1.STATUSES.UNPROCESSABLE_ENTITY,
+		    exports$1.STATUSES.LOCKED,
+		    exports$1.STATUSES.FAILED_DEPENDENCY,
+		    exports$1.STATUSES.TOO_EARLY,
+		    exports$1.STATUSES.UPGRADE_REQUIRED,
+		    exports$1.STATUSES.PRECONDITION_REQUIRED,
+		    exports$1.STATUSES.TOO_MANY_REQUESTS,
+		    exports$1.STATUSES.REQUEST_HEADER_FIELDS_TOO_LARGE_UNOFFICIAL,
+		    exports$1.STATUSES.REQUEST_HEADER_FIELDS_TOO_LARGE,
+		    exports$1.STATUSES.LOGIN_TIMEOUT,
+		    exports$1.STATUSES.NO_RESPONSE,
+		    exports$1.STATUSES.RETRY_WITH,
+		    exports$1.STATUSES.BLOCKED_BY_PARENTAL_CONTROL,
+		    exports$1.STATUSES.UNAVAILABLE_FOR_LEGAL_REASONS,
+		    exports$1.STATUSES.CLIENT_CLOSED_LOAD_BALANCED_REQUEST,
+		    exports$1.STATUSES.INVALID_X_FORWARDED_FOR,
+		    exports$1.STATUSES.REQUEST_HEADER_TOO_LARGE,
+		    exports$1.STATUSES.SSL_CERTIFICATE_ERROR,
+		    exports$1.STATUSES.SSL_CERTIFICATE_REQUIRED,
+		    exports$1.STATUSES.HTTP_REQUEST_SENT_TO_HTTPS_PORT,
+		    exports$1.STATUSES.INVALID_TOKEN,
+		    exports$1.STATUSES.CLIENT_CLOSED_REQUEST,
+		    exports$1.STATUSES.INTERNAL_SERVER_ERROR,
+		    exports$1.STATUSES.NOT_IMPLEMENTED,
+		    exports$1.STATUSES.BAD_GATEWAY,
+		    exports$1.STATUSES.SERVICE_UNAVAILABLE,
+		    exports$1.STATUSES.GATEWAY_TIMEOUT,
+		    exports$1.STATUSES.HTTP_VERSION_NOT_SUPPORTED,
+		    exports$1.STATUSES.VARIANT_ALSO_NEGOTIATES,
+		    exports$1.STATUSES.INSUFFICIENT_STORAGE,
+		    exports$1.STATUSES.LOOP_DETECTED,
+		    exports$1.STATUSES.BANDWIDTH_LIMIT_EXCEEDED,
+		    exports$1.STATUSES.NOT_EXTENDED,
+		    exports$1.STATUSES.NETWORK_AUTHENTICATION_REQUIRED,
+		    exports$1.STATUSES.WEB_SERVER_UNKNOWN_ERROR,
+		    exports$1.STATUSES.WEB_SERVER_IS_DOWN,
+		    exports$1.STATUSES.CONNECTION_TIMEOUT,
+		    exports$1.STATUSES.ORIGIN_IS_UNREACHABLE,
+		    exports$1.STATUSES.TIMEOUT_OCCURED,
+		    exports$1.STATUSES.SSL_HANDSHAKE_FAILED,
+		    exports$1.STATUSES.INVALID_SSL_CERTIFICATE,
+		    exports$1.STATUSES.RAILGUN_ERROR,
+		    exports$1.STATUSES.SITE_IS_OVERLOADED,
+		    exports$1.STATUSES.SITE_IS_FROZEN,
+		    exports$1.STATUSES.IDENTITY_PROVIDER_AUTHENTICATION_ERROR,
+		    exports$1.STATUSES.NETWORK_READ_TIMEOUT,
+		    exports$1.STATUSES.NETWORK_CONNECT_TIMEOUT,
 		];
-		exports.ALPHA = [];
+		exports$1.ALPHA = [];
 		for (let i = 'A'.charCodeAt(0); i <= 'Z'.charCodeAt(0); i++) {
 		    // Upper case
-		    exports.ALPHA.push(String.fromCharCode(i));
+		    exports$1.ALPHA.push(String.fromCharCode(i));
 		    // Lower case
-		    exports.ALPHA.push(String.fromCharCode(i + 0x20));
+		    exports$1.ALPHA.push(String.fromCharCode(i + 0x20));
 		}
-		exports.NUM_MAP = {
+		exports$1.NUM_MAP = {
 		    0: 0, 1: 1, 2: 2, 3: 3, 4: 4,
 		    5: 5, 6: 6, 7: 7, 8: 8, 9: 9,
 		};
-		exports.HEX_MAP = {
+		exports$1.HEX_MAP = {
 		    0: 0, 1: 1, 2: 2, 3: 3, 4: 4,
 		    5: 5, 6: 6, 7: 7, 8: 8, 9: 9,
 		    A: 0XA, B: 0XB, C: 0XC, D: 0XD, E: 0XE, F: 0XF,
 		    a: 0xa, b: 0xb, c: 0xc, d: 0xd, e: 0xe, f: 0xf,
 		};
-		exports.NUM = [
+		exports$1.NUM = [
 		    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 		];
-		exports.ALPHANUM = exports.ALPHA.concat(exports.NUM);
-		exports.MARK = ['-', '_', '.', '!', '~', '*', '\'', '(', ')'];
-		exports.USERINFO_CHARS = exports.ALPHANUM
-		    .concat(exports.MARK)
+		exports$1.ALPHANUM = exports$1.ALPHA.concat(exports$1.NUM);
+		exports$1.MARK = ['-', '_', '.', '!', '~', '*', '\'', '(', ')'];
+		exports$1.USERINFO_CHARS = exports$1.ALPHANUM
+		    .concat(exports$1.MARK)
 		    .concat(['%', ';', ':', '&', '=', '+', '$', ',']);
 		// TODO(indutny): use RFC
-		exports.URL_CHAR = [
+		exports$1.URL_CHAR = [
 		    '!', '"', '$', '%', '&', '\'',
 		    '(', ')', '*', '+', ',', '-', '.', '/',
 		    ':', ';', '<', '=', '>',
 		    '@', '[', '\\', ']', '^', '_',
 		    '`',
 		    '{', '|', '}', '~',
-		].concat(exports.ALPHANUM);
-		exports.HEX = exports.NUM.concat(['a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F']);
+		].concat(exports$1.ALPHANUM);
+		exports$1.HEX = exports$1.NUM.concat(['a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F']);
 		/* Tokens as defined by rfc 2616. Also lowercases them.
 		 *        token       = 1*<any CHAR except CTLs or separators>
 		 *     separators     = "(" | ")" | "<" | ">" | "@"
@@ -4621,80 +4621,80 @@ function requireConstants$3 () {
 		 *                    | "/" | "[" | "]" | "?" | "="
 		 *                    | "{" | "}" | SP | HT
 		 */
-		exports.TOKEN = [
+		exports$1.TOKEN = [
 		    '!', '#', '$', '%', '&', '\'',
 		    '*', '+', '-', '.',
 		    '^', '_', '`',
 		    '|', '~',
-		].concat(exports.ALPHANUM);
+		].concat(exports$1.ALPHANUM);
 		/*
 		 * Verify that a char is a valid visible (printable) US-ASCII
 		 * character or %x80-FF
 		 */
-		exports.HEADER_CHARS = ['\t'];
+		exports$1.HEADER_CHARS = ['\t'];
 		for (let i = 32; i <= 255; i++) {
 		    if (i !== 127) {
-		        exports.HEADER_CHARS.push(i);
+		        exports$1.HEADER_CHARS.push(i);
 		    }
 		}
 		// ',' = \x44
-		exports.CONNECTION_TOKEN_CHARS = exports.HEADER_CHARS.filter((c) => c !== 44);
-		exports.QUOTED_STRING = ['\t', ' '];
+		exports$1.CONNECTION_TOKEN_CHARS = exports$1.HEADER_CHARS.filter((c) => c !== 44);
+		exports$1.QUOTED_STRING = ['\t', ' '];
 		for (let i = 0x21; i <= 0xff; i++) {
 		    if (i !== 0x22 && i !== 0x5c) { // All characters in ASCII except \ and "
-		        exports.QUOTED_STRING.push(i);
+		        exports$1.QUOTED_STRING.push(i);
 		    }
 		}
-		exports.HTAB_SP_VCHAR_OBS_TEXT = ['\t', ' '];
+		exports$1.HTAB_SP_VCHAR_OBS_TEXT = ['\t', ' '];
 		// VCHAR: https://tools.ietf.org/html/rfc5234#appendix-B.1
 		for (let i = 0x21; i <= 0x7E; i++) {
-		    exports.HTAB_SP_VCHAR_OBS_TEXT.push(i);
+		    exports$1.HTAB_SP_VCHAR_OBS_TEXT.push(i);
 		}
 		// OBS_TEXT: https://datatracker.ietf.org/doc/html/rfc9110#name-collected-abnf
 		for (let i = 0x80; i <= 0xff; i++) {
-		    exports.HTAB_SP_VCHAR_OBS_TEXT.push(i);
+		    exports$1.HTAB_SP_VCHAR_OBS_TEXT.push(i);
 		}
-		exports.MAJOR = exports.NUM_MAP;
-		exports.MINOR = exports.MAJOR;
-		exports.SPECIAL_HEADERS = {
-		    'connection': exports.HEADER_STATE.CONNECTION,
-		    'content-length': exports.HEADER_STATE.CONTENT_LENGTH,
-		    'proxy-connection': exports.HEADER_STATE.CONNECTION,
-		    'transfer-encoding': exports.HEADER_STATE.TRANSFER_ENCODING,
-		    'upgrade': exports.HEADER_STATE.UPGRADE,
+		exports$1.MAJOR = exports$1.NUM_MAP;
+		exports$1.MINOR = exports$1.MAJOR;
+		exports$1.SPECIAL_HEADERS = {
+		    'connection': exports$1.HEADER_STATE.CONNECTION,
+		    'content-length': exports$1.HEADER_STATE.CONTENT_LENGTH,
+		    'proxy-connection': exports$1.HEADER_STATE.CONNECTION,
+		    'transfer-encoding': exports$1.HEADER_STATE.TRANSFER_ENCODING,
+		    'upgrade': exports$1.HEADER_STATE.UPGRADE,
 		};
-		exports.default = {
-		    ERROR: exports.ERROR,
-		    TYPE: exports.TYPE,
-		    FLAGS: exports.FLAGS,
-		    LENIENT_FLAGS: exports.LENIENT_FLAGS,
-		    METHODS: exports.METHODS,
-		    STATUSES: exports.STATUSES,
-		    FINISH: exports.FINISH,
-		    HEADER_STATE: exports.HEADER_STATE,
-		    ALPHA: exports.ALPHA,
-		    NUM_MAP: exports.NUM_MAP,
-		    HEX_MAP: exports.HEX_MAP,
-		    NUM: exports.NUM,
-		    ALPHANUM: exports.ALPHANUM,
-		    MARK: exports.MARK,
-		    USERINFO_CHARS: exports.USERINFO_CHARS,
-		    URL_CHAR: exports.URL_CHAR,
-		    HEX: exports.HEX,
-		    TOKEN: exports.TOKEN,
-		    HEADER_CHARS: exports.HEADER_CHARS,
-		    CONNECTION_TOKEN_CHARS: exports.CONNECTION_TOKEN_CHARS,
-		    QUOTED_STRING: exports.QUOTED_STRING,
-		    HTAB_SP_VCHAR_OBS_TEXT: exports.HTAB_SP_VCHAR_OBS_TEXT,
-		    MAJOR: exports.MAJOR,
-		    MINOR: exports.MINOR,
-		    SPECIAL_HEADERS: exports.SPECIAL_HEADERS,
-		    METHODS_HTTP: exports.METHODS_HTTP,
-		    METHODS_ICE: exports.METHODS_ICE,
-		    METHODS_RTSP: exports.METHODS_RTSP,
-		    METHOD_MAP: exports.METHOD_MAP,
-		    H_METHOD_MAP: exports.H_METHOD_MAP,
-		    STATUSES_HTTP: exports.STATUSES_HTTP,
+		exports$1.default = {
+		    ERROR: exports$1.ERROR,
+		    TYPE: exports$1.TYPE,
+		    FLAGS: exports$1.FLAGS,
+		    LENIENT_FLAGS: exports$1.LENIENT_FLAGS,
+		    METHODS: exports$1.METHODS,
+		    STATUSES: exports$1.STATUSES,
+		    FINISH: exports$1.FINISH,
+		    HEADER_STATE: exports$1.HEADER_STATE,
+		    ALPHA: exports$1.ALPHA,
+		    NUM_MAP: exports$1.NUM_MAP,
+		    HEX_MAP: exports$1.HEX_MAP,
+		    NUM: exports$1.NUM,
+		    ALPHANUM: exports$1.ALPHANUM,
+		    MARK: exports$1.MARK,
+		    USERINFO_CHARS: exports$1.USERINFO_CHARS,
+		    URL_CHAR: exports$1.URL_CHAR,
+		    HEX: exports$1.HEX,
+		    TOKEN: exports$1.TOKEN,
+		    HEADER_CHARS: exports$1.HEADER_CHARS,
+		    CONNECTION_TOKEN_CHARS: exports$1.CONNECTION_TOKEN_CHARS,
+		    QUOTED_STRING: exports$1.QUOTED_STRING,
+		    HTAB_SP_VCHAR_OBS_TEXT: exports$1.HTAB_SP_VCHAR_OBS_TEXT,
+		    MAJOR: exports$1.MAJOR,
+		    MINOR: exports$1.MINOR,
+		    SPECIAL_HEADERS: exports$1.SPECIAL_HEADERS,
+		    METHODS_HTTP: exports$1.METHODS_HTTP,
+		    METHODS_ICE: exports$1.METHODS_ICE,
+		    METHODS_RTSP: exports$1.METHODS_RTSP,
+		    METHOD_MAP: exports$1.METHOD_MAP,
+		    H_METHOD_MAP: exports$1.H_METHOD_MAP,
+		    STATUSES_HTTP: exports$1.STATUSES_HTTP,
 		}; 
 	} (constants$3));
 	return constants$3;
@@ -10116,8 +10116,8 @@ function requireClientH1 () {
 	     * @param {import('net').Socket} socket
 	     * @param {*} llhttp
 	     */
-	  constructor (client, socket, { exports }) {
-	    this.llhttp = exports;
+	  constructor (client, socket, { exports: exports$1 }) {
+	    this.llhttp = exports$1;
 	    this.ptr = this.llhttp.llhttp_alloc(constants.TYPE.RESPONSE);
 	    this.client = client;
 	    /**
@@ -39065,19 +39065,6 @@ function getProxyFetch(destinationUrl) {
 function getApiBaseUrl() {
     return process.env['GITHUB_API_URL'] || 'https://api.github.com';
 }
-function getUserAgentWithOrchestrationId(baseUserAgent) {
-    var _a;
-    const orchId = (_a = process.env['ACTIONS_ORCHESTRATION_ID']) === null || _a === void 0 ? void 0 : _a.trim();
-    if (orchId) {
-        const sanitizedId = orchId.replace(/[^a-z0-9_.-]/gi, '_');
-        const tag = `actions_orchestration_id/${sanitizedId}`;
-        if (baseUserAgent === null || baseUserAgent === void 0 ? void 0 : baseUserAgent.includes(tag))
-            return baseUserAgent;
-        const ua = baseUserAgent ? `${baseUserAgent} ` : '';
-        return `${ua}${tag}`;
-    }
-    return baseUserAgent;
-}
 
 function getUserAgent() {
   if (typeof navigator === "object" && "userAgent" in navigator) {
@@ -43056,11 +43043,6 @@ function getOctokitOptions(token, options) {
     if (auth) {
         opts.auth = auth;
     }
-    // Orchestration ID
-    const userAgent = getUserAgentWithOrchestrationId(opts.userAgent);
-    if (userAgent) {
-        opts.userAgent = userAgent;
-    }
     return opts;
 }
 
@@ -43076,14 +43058,10 @@ function getOctokit(token, options, ...additionalPlugins) {
     return new GitHubWithPlugins(getOctokitOptions(token));
 }
 
-const CDN_BASE = "https://cdn.weglot.com";
-const API_BASE = "https://cdn-api-weglot.com";
-const API_MAX_LENGTH = 600;
-const UPDATE_COMMENT_TRIGGER = "/update";
-
+const SETTINGS_BASE = "https://api.weglot.com";
 async function fetchProjectSettings(apiKey) {
-    const settingsKey = apiKey.startsWith("wg_") ? apiKey.slice(3) : apiKey;
-    const url = `${CDN_BASE}/projects-settings/${settingsKey}.json`;
+    const params = new URLSearchParams({ api_key: apiKey });
+    const url = `${SETTINGS_BASE}/project-settings?${params.toString()}`;
     const res = await fetch(url, {
         method: "GET",
         headers: { Accept: "application/json" },
@@ -43097,42 +43075,36 @@ async function fetchProjectSettings(apiKey) {
         }
         throw new Error(`Failed to fetch Weglot project settings: ${res.status} ${res.statusText}`);
     }
-    const data = (await res.json());
-    const settings = (data.settings ?? data);
+    const settings = (await res.json());
+    if (settings.product !== "2.0") {
+        throw new Error(`This action requires a Weglot v2 project (product "2.0"), but got "${settings.product ?? "unknown"}". Please use a Weglot v2 API key.`);
+    }
     return settings;
 }
 
-async function translateStrings(opts) {
-    const { apiKey, lFrom, lTo, requestUrl, strings, version } = opts;
-    if (strings.length === 0) {
-        return [];
-    }
-    const words = strings.map(w => ({ t: 1, w, l: "translate-action" }));
-    const slices = [];
+const API_MAX_LENGTH = 600;
+const UPDATE_COMMENT_TRIGGER = "/update";
+const DEFAULT_TRANSLATION_TIMEOUT_SECONDS = 300;
+const POLL_INTERVAL_MS = 5000;
+
+const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+async function requestTranslations(apiBaseUrl, apiKey, lFrom, lTo, requestUrl, words) {
+    const url = `${apiBaseUrl}/translate`;
+    const results = [];
     for (let start = 0; start < words.length; start += API_MAX_LENGTH) {
-        slices.push(words.slice(start, start + API_MAX_LENGTH));
-    }
-    const allTranslated = [];
-    for (const [s, slice] of slices.entries()) {
+        const slice = words.slice(start, start + API_MAX_LENGTH);
         const body = JSON.stringify({
             l_from: lFrom,
             l_to: lTo,
             request_url: requestUrl,
             words: slice,
         });
-        const params = new URLSearchParams({
-            api_key: apiKey,
-            s: String(s),
-        });
-        if (version) {
-            params.set("v", String(version));
-        }
-        const url = `${API_BASE}/translate?${params.toString()}`;
         const res = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
+                Authorization: `Key ${apiKey}`,
             },
             body,
         });
@@ -43151,9 +43123,60 @@ async function translateStrings(opts) {
         if (!Array.isArray(toWords)) {
             throw new Error("Weglot API response missing or invalid to_words");
         }
-        allTranslated.push(...toWords);
+        const ids = Array.isArray(json.ids) ? json.ids : null;
+        toWords.forEach((value, i) => {
+            const id = ids ? (ids[i] ?? null) : null;
+            const queued = value === null && (ids === null || id !== null);
+            results.push({ queued, value });
+        });
     }
-    return allTranslated;
+    return results;
+}
+async function translateStrings(opts) {
+    const { apiKey, apiBaseUrl, lFrom, lTo, requestUrl, strings, deadline } = opts;
+    const pollIntervalMs = opts.pollIntervalMs ?? POLL_INTERVAL_MS;
+    if (strings.length === 0) {
+        return [];
+    }
+    const allWords = strings.map(w => ({
+        t: 1,
+        w,
+        l: ["translate-action"],
+    }));
+    const initial = await requestTranslations(apiBaseUrl, apiKey, lFrom, lTo, requestUrl, allWords);
+    const results = initial.map((result, index) => {
+        if (result.value !== null) {
+            return result.value;
+        }
+        // Untranslatable leaf (no queued translation): keep the source string.
+        return result.queued ? null : strings[index];
+    });
+    let pending = initial
+        .map((result, index) => result.value === null && result.queued ? index : -1)
+        .filter(index => index >= 0);
+    while (pending.length > 0 && Date.now() < deadline) {
+        await sleep(pollIntervalMs);
+        const subsetWords = pending.map(index => allWords[index]);
+        const subset = await requestTranslations(apiBaseUrl, apiKey, lFrom, lTo, requestUrl, subsetWords);
+        const stillPending = [];
+        pending.forEach((originalIndex, k) => {
+            const result = subset[k];
+            if (result.value !== null) {
+                results[originalIndex] = result.value;
+            }
+            else if (!result.queued) {
+                results[originalIndex] = strings[originalIndex];
+            }
+            else {
+                stillPending.push(originalIndex);
+            }
+        });
+        pending = stillPending;
+    }
+    if (pending.length > 0) {
+        throw new Error(`${pending.length} string(s) were not translated within the timeout (LLM translations are queued). Already-translated strings are cached — re-run the action to resume.`);
+    }
+    return results;
 }
 
 var Gt=(n,t,e)=>{let s=n instanceof RegExp?ce(n,e):n,i=t instanceof RegExp?ce(t,e):t,r=s!==null&&i!=null&&ss(s,i,e);return r&&{start:r[0],end:r[1],pre:e.slice(0,r[0]),body:e.slice(r[0]+s.length,r[1]),post:e.slice(r[1]+i.length)}},ce=(n,t)=>{let e=t.match(n);return e?e[0]:null},ss=(n,t,e)=>{let s,i,r,o,h,a=e.indexOf(n),l=e.indexOf(t,a+1),u=a;if(a>=0&&l>0){if(n===t)return [a,l];for(s=[],r=e.length;u>=0&&!h;){if(u===a)s.push(u),a=e.indexOf(n,u+1);else if(s.length===1){let c=s.pop();c!==void 0&&(h=[c,l]);}else i=s.pop(),i!==void 0&&i<r&&(r=i,o=l),l=e.indexOf(t,u+1);u=a<l&&a>=0?a:l;}s.length&&o!==void 0&&(h=[r,o]);}return h};var fe="\0SLASH"+Math.random()+"\0",ue="\0OPEN"+Math.random()+"\0",qt="\0CLOSE"+Math.random()+"\0",de="\0COMMA"+Math.random()+"\0",pe="\0PERIOD"+Math.random()+"\0",is=new RegExp(fe,"g"),rs=new RegExp(ue,"g"),ns=new RegExp(qt,"g"),os=new RegExp(de,"g"),hs=new RegExp(pe,"g"),as=/\\\\/g,ls=/\\{/g,cs=/\\}/g,fs=/\\,/g,us=/\\./g,ds=1e5;function Ht(n){return isNaN(n)?n.charCodeAt(0):parseInt(n,10)}function ps(n){return n.replace(as,fe).replace(ls,ue).replace(cs,qt).replace(fs,de).replace(us,pe)}function ms(n){return n.replace(is,"\\").replace(rs,"{").replace(ns,"}").replace(os,",").replace(hs,".")}function me(n){if(!n)return [""];let t=[],e=Gt("{","}",n);if(!e)return n.split(",");let{pre:s,body:i,post:r}=e,o=s.split(",");o[o.length-1]+="{"+i+"}";let h=me(r);return r.length&&(o[o.length-1]+=h.shift(),o.push.apply(o,h)),t.push.apply(t,o),t}function ge(n,t={}){if(!n)return [];let{max:e=ds}=t;return n.slice(0,2)==="{}"&&(n="\\{\\}"+n.slice(2)),ht(ps(n),e,true).map(ms)}function gs(n){return "{"+n+"}"}function ws(n){return /^-?0\d/.test(n)}function ys(n,t){return n<=t}function bs(n,t){return n>=t}function ht(n,t,e){let s=[],i=Gt("{","}",n);if(!i)return [n];let r=i.pre,o=i.post.length?ht(i.post,t,false):[""];if(/\$$/.test(i.pre))for(let h=0;h<o.length&&h<t;h++){let a=r+"{"+i.body+"}"+o[h];s.push(a);}else {let h=/^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(i.body),a=/^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(i.body),l=h||a,u=i.body.indexOf(",")>=0;if(!l&&!u)return i.post.match(/,(?!,).*\}/)?(n=i.pre+"{"+i.body+qt+i.post,ht(n,t,true)):[n];let c;if(l)c=i.body.split(/\.\./);else if(c=me(i.body),c.length===1&&c[0]!==void 0&&(c=ht(c[0],t,false).map(gs),c.length===1))return o.map(f=>i.pre+c[0]+f);let d;if(l&&c[0]!==void 0&&c[1]!==void 0){let f=Ht(c[0]),m=Ht(c[1]),p=Math.max(c[0].length,c[1].length),w=c.length===3&&c[2]!==void 0?Math.abs(Ht(c[2])):1,g=ys;m<f&&(w*=-1,g=bs);let E=c.some(ws);d=[];for(let y=f;g(y,m);y+=w){let b;if(a)b=String.fromCharCode(y),b==="\\"&&(b="");else if(b=String(y),E){let z=p-b.length;if(z>0){let $=new Array(z+1).join("0");y<0?b="-"+$+b.slice(1):b=$+b;}}d.push(b);}}else {d=[];for(let f=0;f<c.length;f++)d.push.apply(d,ht(c[f],t,false));}for(let f=0;f<d.length;f++)for(let m=0;m<o.length&&s.length<t;m++){let p=r+d[f]+o[m];(!e||l||p)&&s.push(p);}}return s}var at=n=>{if(typeof n!="string")throw new TypeError("invalid pattern");if(n.length>65536)throw new TypeError("pattern is too long")};var Ss={"[:alnum:]":["\\p{L}\\p{Nl}\\p{Nd}",true],"[:alpha:]":["\\p{L}\\p{Nl}",true],"[:ascii:]":["\\x00-\\x7f",false],"[:blank:]":["\\p{Zs}\\t",true],"[:cntrl:]":["\\p{Cc}",true],"[:digit:]":["\\p{Nd}",true],"[:graph:]":["\\p{Z}\\p{C}",true,true],"[:lower:]":["\\p{Ll}",true],"[:print:]":["\\p{C}",true],"[:punct:]":["\\p{P}",true],"[:space:]":["\\p{Z}\\t\\r\\n\\v\\f",true],"[:upper:]":["\\p{Lu}",true],"[:word:]":["\\p{L}\\p{Nl}\\p{Nd}\\p{Pc}",true],"[:xdigit:]":["A-Fa-f0-9",false]},lt=n=>n.replace(/[[\]\\-]/g,"\\$&"),Es=n=>n.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&"),we=n=>n.join(""),ye=(n,t)=>{let e=t;if(n.charAt(e)!=="[")throw new Error("not in a brace expression");let s=[],i=[],r=e+1,o=false,h=false,a=false,l=false,u=e,c="";t:for(;r<n.length;){let p=n.charAt(r);if((p==="!"||p==="^")&&r===e+1){l=true,r++;continue}if(p==="]"&&o&&!a){u=r+1;break}if(o=true,p==="\\"&&!a){a=true,r++;continue}if(p==="["&&!a){for(let[w,[g,S,E]]of Object.entries(Ss))if(n.startsWith(w,r)){if(c)return ["$.",false,n.length-e,true];r+=w.length,E?i.push(g):s.push(g),h=h||S;continue t}}if(a=false,c){p>c?s.push(lt(c)+"-"+lt(p)):p===c&&s.push(lt(p)),c="",r++;continue}if(n.startsWith("-]",r+1)){s.push(lt(p+"-")),r+=2;continue}if(n.startsWith("-",r+1)){c=p,r+=2;continue}s.push(lt(p)),r++;}if(u<r)return ["",false,0,false];if(!s.length&&!i.length)return ["$.",false,n.length-e,true];if(i.length===0&&s.length===1&&/^\\?.$/.test(s[0])&&!l){let p=s[0].length===2?s[0].slice(-1):s[0];return [Es(p),false,u-e,false]}let d="["+(l?"^":"")+we(s)+"]",f="["+(l?"":"^")+we(i)+"]";return [s.length&&i.length?"("+d+"|"+f+")":s.length?d:f,h,u-e,true]};var W=(n,{windowsPathsNoEscape:t=false,magicalBraces:e=true}={})=>e?t?n.replace(/\[([^\/\\])\]/g,"$1"):n.replace(/((?!\\).|^)\[([^\/\\])\]/g,"$1$2").replace(/\\([^\/])/g,"$1"):t?n.replace(/\[([^\/\\{}])\]/g,"$1"):n.replace(/((?!\\).|^)\[([^\/\\{}])\]/g,"$1$2").replace(/\\([^\/{}])/g,"$1");var xs=new Set(["!","?","+","*","@"]),be=n=>xs.has(n),vs="(?!(?:^|/)\\.\\.?(?:$|/))",Ct="(?!\\.)",Cs=new Set(["[","."]),Ts=new Set(["..","."]),As=new Set("().*{}+?[]^$\\!"),ks=n=>n.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&"),Kt="[^/]",Se=Kt+"*?",Ee=Kt+"+?",Q=class n{type;#t;#s;#n=false;#r=[];#o;#S;#w;#c=false;#h;#u;#f=false;constructor(t,e,s={}){this.type=t,t&&(this.#s=true),this.#o=e,this.#t=this.#o?this.#o.#t:this,this.#h=this.#t===this?s:this.#t.#h,this.#w=this.#t===this?[]:this.#t.#w,t==="!"&&!this.#t.#c&&this.#w.push(this),this.#S=this.#o?this.#o.#r.length:0;}get hasMagic(){if(this.#s!==void 0)return this.#s;for(let t of this.#r)if(typeof t!="string"&&(t.type||t.hasMagic))return this.#s=true;return this.#s}toString(){return this.#u!==void 0?this.#u:this.type?this.#u=this.type+"("+this.#r.map(t=>String(t)).join("|")+")":this.#u=this.#r.map(t=>String(t)).join("")}#a(){if(this!==this.#t)throw new Error("should only call on root");if(this.#c)return this;this.toString(),this.#c=true;let t;for(;t=this.#w.pop();){if(t.type!=="!")continue;let e=t,s=e.#o;for(;s;){for(let i=e.#S+1;!s.type&&i<s.#r.length;i++)for(let r of t.#r){if(typeof r=="string")throw new Error("string part in extglob AST??");r.copyIn(s.#r[i]);}e=s,s=e.#o;}}return this}push(...t){for(let e of t)if(e!==""){if(typeof e!="string"&&!(e instanceof n&&e.#o===this))throw new Error("invalid part: "+e);this.#r.push(e);}}toJSON(){let t=this.type===null?this.#r.slice().map(e=>typeof e=="string"?e:e.toJSON()):[this.type,...this.#r.map(e=>e.toJSON())];return this.isStart()&&!this.type&&t.unshift([]),this.isEnd()&&(this===this.#t||this.#t.#c&&this.#o?.type==="!")&&t.push({}),t}isStart(){if(this.#t===this)return  true;if(!this.#o?.isStart())return  false;if(this.#S===0)return  true;let t=this.#o;for(let e=0;e<this.#S;e++){let s=t.#r[e];if(!(s instanceof n&&s.type==="!"))return  false}return  true}isEnd(){if(this.#t===this||this.#o?.type==="!")return  true;if(!this.#o?.isEnd())return  false;if(!this.type)return this.#o?.isEnd();let t=this.#o?this.#o.#r.length:0;return this.#S===t-1}copyIn(t){typeof t=="string"?this.push(t):this.push(t.clone(this));}clone(t){let e=new n(this.type,t);for(let s of this.#r)e.copyIn(s);return e}static#i(t,e,s,i){let r=false,o=false,h=-1,a=false;if(e.type===null){let f=s,m="";for(;f<t.length;){let p=t.charAt(f++);if(r||p==="\\"){r=!r,m+=p;continue}if(o){f===h+1?(p==="^"||p==="!")&&(a=true):p==="]"&&!(f===h+2&&a)&&(o=false),m+=p;continue}else if(p==="["){o=true,h=f,a=false,m+=p;continue}if(!i.noext&&be(p)&&t.charAt(f)==="("){e.push(m),m="";let w=new n(p,e);f=n.#i(t,w,f,i),e.push(w);continue}m+=p;}return e.push(m),f}let l=s+1,u=new n(null,e),c=[],d="";for(;l<t.length;){let f=t.charAt(l++);if(r||f==="\\"){r=!r,d+=f;continue}if(o){l===h+1?(f==="^"||f==="!")&&(a=true):f==="]"&&!(l===h+2&&a)&&(o=false),d+=f;continue}else if(f==="["){o=true,h=l,a=false,d+=f;continue}if(be(f)&&t.charAt(l)==="("){u.push(d),d="";let m=new n(f,u);u.push(m),l=n.#i(t,m,l,i);continue}if(f==="|"){u.push(d),d="",c.push(u),u=new n(null,e);continue}if(f===")")return d===""&&e.#r.length===0&&(e.#f=true),u.push(d),d="",e.push(...c,u),l;d+=f;}return e.type=null,e.#s=void 0,e.#r=[t.substring(s-1)],l}static fromGlob(t,e={}){let s=new n(null,void 0,e);return n.#i(t,s,0,e),s}toMMPattern(){if(this!==this.#t)return this.#t.toMMPattern();let t=this.toString(),[e,s,i,r]=this.toRegExpSource();if(!(i||this.#s||this.#h.nocase&&!this.#h.nocaseMagicOnly&&t.toUpperCase()!==t.toLowerCase()))return s;let h=(this.#h.nocase?"i":"")+(r?"u":"");return Object.assign(new RegExp(`^${e}$`,h),{_src:e,_glob:t})}get options(){return this.#h}toRegExpSource(t){let e=t??!!this.#h.dot;if(this.#t===this&&this.#a(),!this.type){let a=this.isStart()&&this.isEnd()&&!this.#r.some(f=>typeof f!="string"),l=this.#r.map(f=>{let[m,p,w,g]=typeof f=="string"?n.#E(f,this.#s,a):f.toRegExpSource(t);return this.#s=this.#s||w,this.#n=this.#n||g,m}).join(""),u="";if(this.isStart()&&typeof this.#r[0]=="string"&&!(this.#r.length===1&&Ts.has(this.#r[0]))){let m=Cs,p=e&&m.has(l.charAt(0))||l.startsWith("\\.")&&m.has(l.charAt(2))||l.startsWith("\\.\\.")&&m.has(l.charAt(4)),w=!e&&!t&&m.has(l.charAt(0));u=p?vs:w?Ct:"";}let c="";return this.isEnd()&&this.#t.#c&&this.#o?.type==="!"&&(c="(?:$|\\/)"),[u+l+c,W(l),this.#s=!!this.#s,this.#n]}let s=this.type==="*"||this.type==="+",i=this.type==="!"?"(?:(?!(?:":"(?:",r=this.#d(e);if(this.isStart()&&this.isEnd()&&!r&&this.type!=="!"){let a=this.toString();return this.#r=[a],this.type=null,this.#s=void 0,[a,W(this.toString()),false,false]}let o=!s||t||e||!Ct?"":this.#d(true);o===r&&(o=""),o&&(r=`(?:${r})(?:${o})*?`);let h="";if(this.type==="!"&&this.#f)h=(this.isStart()&&!e?Ct:"")+Ee;else {let a=this.type==="!"?"))"+(this.isStart()&&!e&&!t?Ct:"")+Se+")":this.type==="@"?")":this.type==="?"?")?":this.type==="+"&&o?")":this.type==="*"&&o?")?":`)${this.type}`;h=i+r+a;}return [h,W(r),this.#s=!!this.#s,this.#n]}#d(t){return this.#r.map(e=>{if(typeof e=="string")throw new Error("string type in extglob ast??");let[s,i,r,o]=e.toRegExpSource(t);return this.#n=this.#n||o,s}).filter(e=>!(this.isStart()&&this.isEnd())||!!e).join("|")}static#E(t,e,s=false){let i=false,r="",o=false,h=false;for(let a=0;a<t.length;a++){let l=t.charAt(a);if(i){i=false,r+=(As.has(l)?"\\":"")+l;continue}if(l==="*"){if(h)continue;h=true,r+=s&&/^[*]+$/.test(t)?Ee:Se,e=true;continue}else h=false;if(l==="\\"){a===t.length-1?r+="\\\\":i=true;continue}if(l==="["){let[u,c,d,f]=ye(t,a);if(d){r+=u,o=o||c,a+=d-1,e=e||f;continue}}if(l==="?"){r+=Kt,e=true;continue}r+=ks(l);}return [r,W(t),!!e,o]}};var tt=(n,{windowsPathsNoEscape:t=false,magicalBraces:e=false}={})=>e?t?n.replace(/[?*()[\]{}]/g,"[$&]"):n.replace(/[?*()[\]\\{}]/g,"\\$&"):t?n.replace(/[?*()[\]]/g,"[$&]"):n.replace(/[?*()[\]\\]/g,"\\$&");var O=(n,t,e={})=>(at(t),!e.nocomment&&t.charAt(0)==="#"?false:new D(t,e).match(n)),Rs=/^\*+([^+@!?\*\[\(]*)$/,Os=n=>t=>!t.startsWith(".")&&t.endsWith(n),Fs=n=>t=>t.endsWith(n),Ds=n=>(n=n.toLowerCase(),t=>!t.startsWith(".")&&t.toLowerCase().endsWith(n)),Ms=n=>(n=n.toLowerCase(),t=>t.toLowerCase().endsWith(n)),Ns=/^\*+\.\*+$/,_s=n=>!n.startsWith(".")&&n.includes("."),Ls=n=>n!=="."&&n!==".."&&n.includes("."),Ws=/^\.\*+$/,Ps=n=>n!=="."&&n!==".."&&n.startsWith("."),js=/^\*+$/,Is=n=>n.length!==0&&!n.startsWith("."),zs=n=>n.length!==0&&n!=="."&&n!=="..",Bs=/^\?+([^+@!?\*\[\(]*)?$/,Us=([n,t=""])=>{let e=Ce([n]);return t?(t=t.toLowerCase(),s=>e(s)&&s.toLowerCase().endsWith(t)):e},$s=([n,t=""])=>{let e=Te([n]);return t?(t=t.toLowerCase(),s=>e(s)&&s.toLowerCase().endsWith(t)):e},Gs=([n,t=""])=>{let e=Te([n]);return t?s=>e(s)&&s.endsWith(t):e},Hs=([n,t=""])=>{let e=Ce([n]);return t?s=>e(s)&&s.endsWith(t):e},Ce=([n])=>{let t=n.length;return e=>e.length===t&&!e.startsWith(".")},Te=([n])=>{let t=n.length;return e=>e.length===t&&e!=="."&&e!==".."},Ae=typeof process=="object"&&process?typeof process.env=="object"&&process.env&&process.env.__MINIMATCH_TESTING_PLATFORM__||process.platform:"posix",xe={win32:{sep:"\\"},posix:{sep:"/"}},qs=Ae==="win32"?xe.win32.sep:xe.posix.sep;O.sep=qs;var A=Symbol("globstar **");O.GLOBSTAR=A;var Ks="[^/]",Vs=Ks+"*?",Ys="(?:(?!(?:\\/|^)(?:\\.{1,2})($|\\/)).)*?",Xs="(?:(?!(?:\\/|^)\\.).)*?",Js=(n,t={})=>e=>O(e,n,t);O.filter=Js;var N=(n,t={})=>Object.assign({},n,t),Zs=n=>{if(!n||typeof n!="object"||!Object.keys(n).length)return O;let t=O;return Object.assign((s,i,r={})=>t(s,i,N(n,r)),{Minimatch:class extends t.Minimatch{constructor(i,r={}){super(i,N(n,r));}static defaults(i){return t.defaults(N(n,i)).Minimatch}},AST:class extends t.AST{constructor(i,r,o={}){super(i,r,N(n,o));}static fromGlob(i,r={}){return t.AST.fromGlob(i,N(n,r))}},unescape:(s,i={})=>t.unescape(s,N(n,i)),escape:(s,i={})=>t.escape(s,N(n,i)),filter:(s,i={})=>t.filter(s,N(n,i)),defaults:s=>t.defaults(N(n,s)),makeRe:(s,i={})=>t.makeRe(s,N(n,i)),braceExpand:(s,i={})=>t.braceExpand(s,N(n,i)),match:(s,i,r={})=>t.match(s,i,N(n,r)),sep:t.sep,GLOBSTAR:A})};O.defaults=Zs;var ke=(n,t={})=>(at(n),t.nobrace||!/\{(?:(?!\{).)*\}/.test(n)?[n]:ge(n,{max:t.braceExpandMax}));O.braceExpand=ke;var Qs=(n,t={})=>new D(n,t).makeRe();O.makeRe=Qs;var ti=(n,t,e={})=>{let s=new D(t,e);return n=n.filter(i=>s.match(i)),s.options.nonull&&!n.length&&n.push(t),n};O.match=ti;var ve=/[?*]|[+@!]\(.*?\)|\[|\]/,ei=n=>n.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&"),D=class{options;set;pattern;windowsPathsNoEscape;nonegate;negate;comment;empty;preserveMultipleSlashes;partial;globSet;globParts;nocase;isWindows;platform;windowsNoMagicRoot;regexp;constructor(t,e={}){at(t),e=e||{},this.options=e,this.pattern=t,this.platform=e.platform||Ae,this.isWindows=this.platform==="win32";let s="allowWindowsEscape";this.windowsPathsNoEscape=!!e.windowsPathsNoEscape||e[s]===false,this.windowsPathsNoEscape&&(this.pattern=this.pattern.replace(/\\/g,"/")),this.preserveMultipleSlashes=!!e.preserveMultipleSlashes,this.regexp=null,this.negate=false,this.nonegate=!!e.nonegate,this.comment=false,this.empty=false,this.partial=!!e.partial,this.nocase=!!this.options.nocase,this.windowsNoMagicRoot=e.windowsNoMagicRoot!==void 0?e.windowsNoMagicRoot:!!(this.isWindows&&this.nocase),this.globSet=[],this.globParts=[],this.set=[],this.make();}hasMagic(){if(this.options.magicalBraces&&this.set.length>1)return  true;for(let t of this.set)for(let e of t)if(typeof e!="string")return  true;return  false}debug(...t){}make(){let t=this.pattern,e=this.options;if(!e.nocomment&&t.charAt(0)==="#"){this.comment=true;return}if(!t){this.empty=true;return}this.parseNegate(),this.globSet=[...new Set(this.braceExpand())],e.debug&&(this.debug=(...r)=>console.error(...r)),this.debug(this.pattern,this.globSet);let s=this.globSet.map(r=>this.slashSplit(r));this.globParts=this.preprocess(s),this.debug(this.pattern,this.globParts);let i=this.globParts.map((r,o,h)=>{if(this.isWindows&&this.windowsNoMagicRoot){let a=r[0]===""&&r[1]===""&&(r[2]==="?"||!ve.test(r[2]))&&!ve.test(r[3]),l=/^[a-z]:/i.test(r[0]);if(a)return [...r.slice(0,4),...r.slice(4).map(u=>this.parse(u))];if(l)return [r[0],...r.slice(1).map(u=>this.parse(u))]}return r.map(a=>this.parse(a))});if(this.debug(this.pattern,i),this.set=i.filter(r=>r.indexOf(false)===-1),this.isWindows)for(let r=0;r<this.set.length;r++){let o=this.set[r];o[0]===""&&o[1]===""&&this.globParts[r][2]==="?"&&typeof o[3]=="string"&&/^[a-z]:$/i.test(o[3])&&(o[2]="?");}this.debug(this.pattern,this.set);}preprocess(t){if(this.options.noglobstar)for(let s=0;s<t.length;s++)for(let i=0;i<t[s].length;i++)t[s][i]==="**"&&(t[s][i]="*");let{optimizationLevel:e=1}=this.options;return e>=2?(t=this.firstPhasePreProcess(t),t=this.secondPhasePreProcess(t)):e>=1?t=this.levelOneOptimize(t):t=this.adjascentGlobstarOptimize(t),t}adjascentGlobstarOptimize(t){return t.map(e=>{let s=-1;for(;(s=e.indexOf("**",s+1))!==-1;){let i=s;for(;e[i+1]==="**";)i++;i!==s&&e.splice(s,i-s);}return e})}levelOneOptimize(t){return t.map(e=>(e=e.reduce((s,i)=>{let r=s[s.length-1];return i==="**"&&r==="**"?s:i===".."&&r&&r!==".."&&r!=="."&&r!=="**"?(s.pop(),s):(s.push(i),s)},[]),e.length===0?[""]:e))}levelTwoFileOptimize(t){Array.isArray(t)||(t=this.slashSplit(t));let e=false;do{if(e=false,!this.preserveMultipleSlashes){for(let i=1;i<t.length-1;i++){let r=t[i];i===1&&r===""&&t[0]===""||(r==="."||r==="")&&(e=true,t.splice(i,1),i--);}t[0]==="."&&t.length===2&&(t[1]==="."||t[1]==="")&&(e=true,t.pop());}let s=0;for(;(s=t.indexOf("..",s+1))!==-1;){let i=t[s-1];i&&i!=="."&&i!==".."&&i!=="**"&&(e=true,t.splice(s-1,2),s-=2);}}while(e);return t.length===0?[""]:t}firstPhasePreProcess(t){let e=false;do{e=false;for(let s of t){let i=-1;for(;(i=s.indexOf("**",i+1))!==-1;){let o=i;for(;s[o+1]==="**";)o++;o>i&&s.splice(i+1,o-i);let h=s[i+1],a=s[i+2],l=s[i+3];if(h!==".."||!a||a==="."||a===".."||!l||l==="."||l==="..")continue;e=true,s.splice(i,1);let u=s.slice(0);u[i]="**",t.push(u),i--;}if(!this.preserveMultipleSlashes){for(let o=1;o<s.length-1;o++){let h=s[o];o===1&&h===""&&s[0]===""||(h==="."||h==="")&&(e=true,s.splice(o,1),o--);}s[0]==="."&&s.length===2&&(s[1]==="."||s[1]==="")&&(e=true,s.pop());}let r=0;for(;(r=s.indexOf("..",r+1))!==-1;){let o=s[r-1];if(o&&o!=="."&&o!==".."&&o!=="**"){e=true;let a=r===1&&s[r+1]==="**"?["."]:[];s.splice(r-1,2,...a),s.length===0&&s.push(""),r-=2;}}}}while(e);return t}secondPhasePreProcess(t){for(let e=0;e<t.length-1;e++)for(let s=e+1;s<t.length;s++){let i=this.partsMatch(t[e],t[s],!this.preserveMultipleSlashes);if(i){t[e]=[],t[s]=i;break}}return t.filter(e=>e.length)}partsMatch(t,e,s=false){let i=0,r=0,o=[],h="";for(;i<t.length&&r<e.length;)if(t[i]===e[r])o.push(h==="b"?e[r]:t[i]),i++,r++;else if(s&&t[i]==="**"&&e[r]===t[i+1])o.push(t[i]),i++;else if(s&&e[r]==="**"&&t[i]===e[r+1])o.push(e[r]),r++;else if(t[i]==="*"&&e[r]&&(this.options.dot||!e[r].startsWith("."))&&e[r]!=="**"){if(h==="b")return  false;h="a",o.push(t[i]),i++,r++;}else if(e[r]==="*"&&t[i]&&(this.options.dot||!t[i].startsWith("."))&&t[i]!=="**"){if(h==="a")return  false;h="b",o.push(e[r]),i++,r++;}else return  false;return t.length===e.length&&o}parseNegate(){if(this.nonegate)return;let t=this.pattern,e=false,s=0;for(let i=0;i<t.length&&t.charAt(i)==="!";i++)e=!e,s++;s&&(this.pattern=t.slice(s)),this.negate=e;}matchOne(t,e,s=false){let i=this.options;if(this.isWindows){let p=typeof t[0]=="string"&&/^[a-z]:$/i.test(t[0]),w=!p&&t[0]===""&&t[1]===""&&t[2]==="?"&&/^[a-z]:$/i.test(t[3]),g=typeof e[0]=="string"&&/^[a-z]:$/i.test(e[0]),S=!g&&e[0]===""&&e[1]===""&&e[2]==="?"&&typeof e[3]=="string"&&/^[a-z]:$/i.test(e[3]),E=w?3:p?0:void 0,y=S?3:g?0:void 0;if(typeof E=="number"&&typeof y=="number"){let[b,z]=[t[E],e[y]];b.toLowerCase()===z.toLowerCase()&&(e[y]=b,y>E?e=e.slice(y):E>y&&(t=t.slice(E)));}}let{optimizationLevel:r=1}=this.options;r>=2&&(t=this.levelTwoFileOptimize(t)),this.debug("matchOne",this,{file:t,pattern:e}),this.debug("matchOne",t.length,e.length);for(var o=0,h=0,a=t.length,l=e.length;o<a&&h<l;o++,h++){this.debug("matchOne loop");var u=e[h],c=t[o];if(this.debug(e,u,c),u===false)return  false;if(u===A){this.debug("GLOBSTAR",[e,u,c]);var d=o,f=h+1;if(f===l){for(this.debug("** at the end");o<a;o++)if(t[o]==="."||t[o]===".."||!i.dot&&t[o].charAt(0)===".")return  false;return  true}for(;d<a;){var m=t[d];if(this.debug(`
@@ -43445,17 +43468,16 @@ function filterLanguages(languagesInput, configuredLanguages) {
         .split(",")
         .map(l => l.trim())
         .flatMap(code => {
-        const found = configuredLanguages.find(l => l.custom_code === code || l.language_to === code);
+        const found = configuredLanguages.find(l => l.language_to === code);
         if (!found) {
             warning(`Language "${code}" is not configured in your Weglot project; skipping.`);
             return [];
         }
-        return [
-            {
-                languageTo: found.language_to,
-                code: found.custom_code ?? found.language_to,
-            },
-        ];
+        if (!found.enabled) {
+            warning(`Language "${code}" is disabled in your Weglot project; skipping.`);
+            return [];
+        }
+        return [found.language_to];
     });
 }
 async function main() {
@@ -43484,6 +43506,16 @@ async function main() {
         const githubToken = (getInput("github-token", { required: false }).trim() ||
             process.env.GITHUB_TOKEN ||
             "").trim();
+        const translationTimeoutInput = getInput("translation-timeout", { required: false })
+            .trim();
+        const parsedTimeout = Number(translationTimeoutInput);
+        const timeoutIsValid = Number.isFinite(parsedTimeout) && parsedTimeout > 0;
+        if (translationTimeoutInput && !timeoutIsValid) {
+            warning(`Invalid translation-timeout "${translationTimeoutInput}"; using default ${DEFAULT_TRANSLATION_TIMEOUT_SECONDS}s.`);
+        }
+        const timeoutSeconds = timeoutIsValid
+            ? parsedTimeout
+            : DEFAULT_TRANSLATION_TIMEOUT_SECONDS;
         // Guard: verify the comment was posted on the translations PR, not any other PR.
         if (isIssueComment) {
             if (outputMode !== "pr") {
@@ -43521,20 +43553,16 @@ async function main() {
         info("Fetching Weglot project settings...");
         const settings = await fetchProjectSettings(apiKey);
         const language_from = settings.language_from;
-        const versions = settings.versions;
-        const version = versions?.translation;
-        const languagesFromSettings = (settings.languages ?? []);
+        const apiBaseUrl = settings.api_base_url;
+        const languagesFromSettings = settings.languages;
         const targetLanguages = languagesInput
             ? filterLanguages(languagesInput, languagesFromSettings)
-            : languagesFromSettings.map(l => ({
-                languageTo: l.language_to,
-                code: l.custom_code ?? l.language_to,
-            }));
+            : languagesFromSettings.filter(l => l.enabled).map(l => l.language_to);
         if (targetLanguages.length === 0) {
             setFailed("No target languages to translate.");
             return;
         }
-        info(`Source language: ${language_from}. Target languages: ${targetLanguages.map(l => l.code).join(", ")}`);
+        info(`Source language: ${language_from}. Target languages: ${targetLanguages.join(", ")}`);
         // Translate
         const sourceFiles = await resolveSourceFiles(sourcePath, workspace);
         if (sourceFiles.length === 0) {
@@ -43545,6 +43573,7 @@ async function main() {
         const requestUrl = process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY
             ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`
             : "https://github.com";
+        const deadline = Date.now() + timeoutSeconds * 1000;
         const writtenPaths = [];
         for (const sourceFilePath of sourceFiles) {
             const relativePath = path.relative(workspace, sourceFilePath);
@@ -43559,17 +43588,25 @@ async function main() {
                 continue;
             }
             for (const lang of targetLanguages) {
-                info(`Translating ${relativePath} -> ${lang.code}...`);
-                const translated = await translateStrings({
-                    apiKey,
-                    lFrom: language_from,
-                    lTo: lang.languageTo,
-                    requestUrl,
-                    strings: values,
-                    version,
-                });
+                info(`Translating ${relativePath} -> ${lang}...`);
+                let translated;
+                try {
+                    translated = await translateStrings({
+                        apiBaseUrl,
+                        apiKey,
+                        deadline,
+                        lFrom: language_from,
+                        lTo: lang,
+                        requestUrl,
+                        strings: values,
+                    });
+                }
+                catch (err) {
+                    const message = err instanceof Error ? err.message : String(err);
+                    throw new Error(`Translating ${relativePath} -> ${lang}: ${message}`, { cause: err });
+                }
                 const translatedObj = applyTranslations(obj, paths, translated);
-                const outPath = getOutputPath(relativePath, lang.code, language_from, outputDir, workspace);
+                const outPath = getOutputPath(relativePath, lang, language_from, outputDir, workspace);
                 await writeJson(workspace, outPath, translatedObj);
                 writtenPaths.push(outPath);
             }

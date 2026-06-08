@@ -132,8 +132,15 @@ jobs:
 | `source-path` | Yes | - | Path or glob to source file(s), e.g. `locales/en.json` or `locales/**/*.json`. |
 | `output-dir` | No | (same as source) | Directory for translated files. |
 | `output-mode` | No | `files` | `files` = write to disk; `pr` = push to deterministic branch `translations/<hash>` and open or update one PR per stream (see above). |
-| `languages` | No | (from project) | Comma-separated target codes (e.g. `fr,de`). If empty, uses all languages from your Weglot project. |
+| `languages` | No | (from project) | Comma-separated target language codes (e.g. `fr,de`). If empty, uses all **enabled** languages from your Weglot project. |
+| `translation-timeout` | No | `300` | Max seconds to wait for queued LLM translations before failing. Weglot v2 translates via LLM, which is queued, so first runs may wait a little. Already-translated strings are cached, so a re-run (or the scheduled sync) resumes any leftover work. |
 | `github-token` | When `output-mode: pr` | - | Token for the GitHub API and `git push`. Use `${{ secrets.GITHUB_TOKEN }}`. Job needs `contents: write`, `issues: write`, and `pull-requests: write`. The repo must also have "Allow GitHub Actions to create and approve pull requests" enabled (see note above). |
+
+> **First-run translation latency:** Weglot v2 uses LLM translation, which is processed
+> in a queue. The first time a string is translated for a given language the action may
+> wait a few seconds (up to `translation-timeout`) for the queue to resolve. Translated
+> strings are cached, so subsequent runs are immediate and a re-run resumes any work that
+> timed out.
 
 ## Outputs
 

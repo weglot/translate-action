@@ -1,50 +1,54 @@
-import { API_BASE, API_MAX_LENGTH } from "./constants.js";
+import { API_MAX_LENGTH, POLL_INTERVAL_MS } from "./constants.js";
 
 export interface TranslateOptions {
   apiKey: string;
+  apiBaseUrl: string;
   lFrom: string;
   lTo: string;
   requestUrl: string;
   strings: string[];
-  version?: number;
+  deadline: number;
+  pollIntervalMs?: number;
 }
 
-export async function translateStrings(
-  opts: TranslateOptions
-): Promise<string[]> {
-  const { apiKey, lFrom, lTo, requestUrl, strings, version } = opts;
-  if (strings.length === 0) {
-    return [];
-  }
+interface Word {
+  t: number;
+  w: string;
+  l: string[];
+}
 
-  const words = strings.map(w => ({ t: 1, w, l: "translate-action" }));
+interface WordResult {
+  value: string | null;
+  queued: boolean;
+}
 
-  const slices: Array<typeof words> = [];
+const sleep = (ms: number): Promise<void> =>
+  new Promise(res => setTimeout(res, ms));
+
+async function requestTranslations(
+  apiBaseUrl: string,
+  apiKey: string,
+  lFrom: string,
+  lTo: string,
+  requestUrl: string,
+  words: Word[]
+): Promise<WordResult[]> {
+  const url = `${apiBaseUrl}/translate`;
+  const results: WordResult[] = [];
   for (let start = 0; start < words.length; start += API_MAX_LENGTH) {
-    slices.push(words.slice(start, start + API_MAX_LENGTH));
-  }
-
-  const allTranslated: string[] = [];
-  for (const [s, slice] of slices.entries()) {
+    const slice = words.slice(start, start + API_MAX_LENGTH);
     const body = JSON.stringify({
       l_from: lFrom,
       l_to: lTo,
       request_url: requestUrl,
       words: slice,
     });
-    const params = new URLSearchParams({
-      api_key: apiKey,
-      s: String(s),
-    });
-    if (version) {
-      params.set("v", String(version));
-    }
-    const url = `${API_BASE}/translate?${params.toString()}`;
     const res = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        Authorization: `Key ${apiKey}`,
       },
       body,
     });
@@ -66,13 +70,93 @@ export async function translateStrings(
       );
     }
 
-    const json = (await res.json()) as { to_words?: string[] };
+    const json = (await res.json()) as {
+      to_words?: Array<string | null>;
+      ids?: Array<string | null>;
+    };
     const toWords = json.to_words;
     if (!Array.isArray(toWords)) {
       throw new Error("Weglot API response missing or invalid to_words");
     }
-    allTranslated.push(...toWords);
+    const ids = Array.isArray(json.ids) ? json.ids : null;
+    toWords.forEach((value, i) => {
+      const id = ids ? (ids[i] ?? null) : null;
+      const queued = value === null && (ids === null || id !== null);
+      results.push({ queued, value });
+    });
+  }
+  return results;
+}
+
+export async function translateStrings(
+  opts: TranslateOptions
+): Promise<string[]> {
+  const { apiKey, apiBaseUrl, lFrom, lTo, requestUrl, strings, deadline } =
+    opts;
+  const pollIntervalMs = opts.pollIntervalMs ?? POLL_INTERVAL_MS;
+  if (strings.length === 0) {
+    return [];
   }
 
-  return allTranslated;
+  const allWords: Word[] = strings.map(w => ({
+    t: 1,
+    w,
+    l: ["translate-action"],
+  }));
+
+  const initial = await requestTranslations(
+    apiBaseUrl,
+    apiKey,
+    lFrom,
+    lTo,
+    requestUrl,
+    allWords
+  );
+
+  const results: Array<string | null> = initial.map((result, index) => {
+    if (result.value !== null) {
+      return result.value;
+    }
+    // Untranslatable leaf (no queued translation): keep the source string.
+    return result.queued ? null : strings[index];
+  });
+
+  let pending = initial
+    .map((result, index) =>
+      result.value === null && result.queued ? index : -1
+    )
+    .filter(index => index >= 0);
+
+  while (pending.length > 0 && Date.now() < deadline) {
+    await sleep(pollIntervalMs);
+    const subsetWords = pending.map(index => allWords[index]);
+    const subset = await requestTranslations(
+      apiBaseUrl,
+      apiKey,
+      lFrom,
+      lTo,
+      requestUrl,
+      subsetWords
+    );
+    const stillPending: number[] = [];
+    pending.forEach((originalIndex, k) => {
+      const result = subset[k];
+      if (result.value !== null) {
+        results[originalIndex] = result.value;
+      } else if (!result.queued) {
+        results[originalIndex] = strings[originalIndex];
+      } else {
+        stillPending.push(originalIndex);
+      }
+    });
+    pending = stillPending;
+  }
+
+  if (pending.length > 0) {
+    throw new Error(
+      `${pending.length} string(s) were not translated within the timeout (LLM translations are queued). Already-translated strings are cached — re-run the action to resume.`
+    );
+  }
+
+  return results as string[];
 }
