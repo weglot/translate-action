@@ -1,0 +1,8 @@
+{
+  "hello": "你好",
+  "welcome": "欢迎使用我们的应用",
+  "nested": {
+    "title": "设置",
+    "description": "配置您的偏好设置"
+  }
+}

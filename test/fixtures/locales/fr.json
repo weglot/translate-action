@@ -3,6 +3,6 @@
   "welcome": "Bienvenue sur notre application",
   "nested": {
     "title": "Paramètres",
-    "description": "Ajustez vos préférences"
+    "description": "Configurer vos préférences"
   }
 }

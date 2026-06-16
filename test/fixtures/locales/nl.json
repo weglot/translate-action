@@ -1,0 +1,8 @@
+{
+  "hello": "Hallo",
+  "welcome": "Welkom bij onze app",
+  "nested": {
+    "title": "Instellingen",
+    "description": "Stel uw voorkeuren in"
+  }
+}

@@ -1,8 +1,8 @@
 {
   "hello": "Hallo",
-  "welcome": "Willkommen bei unserer App",
+  "welcome": "Willkommen in unserer App",
   "nested": {
     "title": "Einstellungen",
-    "description": "Stellen Sie Ihre Einstellungen ein"
+    "description": "Einstellungen konfigurieren"
   }
 }
