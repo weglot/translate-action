@@ -48,8 +48,7 @@ export async function createPullRequest(
   const defaultBranch =
     (
       github.context.payload.repository as
-        | { default_branch?: string }
-        | undefined
+        { default_branch?: string } | undefined
     )?.default_branch ?? "main";
 
   await runGit(["config", "user.name", "github-actions[bot]"], false);
