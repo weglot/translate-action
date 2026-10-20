@@ -2,13 +2,15 @@
 
 GitHub Action to translate localization files using your [Weglot](https://weglot.com) project.
 
+The action requires a **Weglot 2.0** project. See the [Translate Action page](https://developers.weglot.com/frameworks-and-ai/translate-action) on the Weglot developer documentation for an overview.
+
 ## Usage
 
 ### Minimal (write files to disk)
 
 ```yaml
 - uses: actions/checkout@v4
-- uses: weglot/translate-action@v1
+- uses: weglot/translate-action@v2
   with:
     api-key: ${{ secrets.WEGLOT_API_KEY }}
     source-path: locales/en.json
@@ -18,7 +20,7 @@ GitHub Action to translate localization files using your [Weglot](https://weglot
 ### With output directory and target languages
 
 ```yaml
-- uses: weglot/translate-action@v1
+- uses: weglot/translate-action@v2
   with:
     api-key: ${{ secrets.WEGLOT_API_KEY }}
     source-path: "locales/**/*.json"
@@ -49,7 +51,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0   # full history needed for git rebase in pr mode
-      - uses: weglot/translate-action@v1
+      - uses: weglot/translate-action@v2
         with:
           api-key: ${{ secrets.WEGLOT_API_KEY }}
           source-path: locales/en.json
@@ -87,7 +89,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0   # full history needed for git rebase in pr mode
-      - uses: weglot/translate-action@v1
+      - uses: weglot/translate-action@v2
         with:
           api-key: ${{ secrets.WEGLOT_API_KEY }}
           source-path: locales/en.json
@@ -108,7 +110,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-      - uses: weglot/translate-action@v1
+      - uses: weglot/translate-action@v2
         with:
           api-key: ${{ secrets.WEGLOT_API_KEY }}
           source-path: locales/en.json
@@ -128,7 +130,7 @@ jobs:
 
 | Input | Required | Default | Description |
 |-------|----------|---------|-------------|
-| `api-key` | Yes | - | Weglot API key. |
+| `api-key` | Yes | - | API key of your Weglot 2.0 project. |
 | `source-path` | Yes | - | Path or glob to source file(s), e.g. `locales/en.json` or `locales/**/*.json`. |
 | `output-dir` | No | (same as source) | Directory for translated files. |
 | `output-mode` | No | `files` | `files` = write to disk; `pr` = push to deterministic branch `translations/<hash>` and open or update one PR per stream (see above). |
