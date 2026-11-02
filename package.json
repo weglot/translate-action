@@ -15,7 +15,7 @@
     "@actions/exec": "^3.0.0",
     "@actions/github": "^9.1.1",
     "@actions/io": "^3.0.2",
-    "glob": "^13.0.6"
+    "glob": "^14.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
